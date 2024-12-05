@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const LoginForm = ({ setIsLoggedIn }) => {
+const AdminLogin = ({ setIsLoggedIn }) => {
   const token = window.localStorage.getItem('authorization')
   
-  // useEffect(()=>{
-  //   if(token){
-  //     navigate("/home")
-  //   }
-  //   else{
-  //     navigate('/login')
-  //   }
-  // },[])
+  useEffect(()=>{
+    if(token){
+      navigate("/home")
+    }
+    else{
+      navigate('/adminlogin')
+    }
+  },[])
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
@@ -44,17 +44,16 @@ const LoginForm = ({ setIsLoggedIn }) => {
     if (validate()) {
       setIsSubmitting(true);
       try {
-        const response = await fetch('https://projectassociate-prxp.onrender.com/api/auth/login', {
+        const response = await fetch('http://localhost:8000/signinadmin', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
         });
         if (!response.ok) throw new Error('Login failed');
         const data = await response.json()
-        console.log(data)
-        window.localStorage.setItem("authorization",data.token)
+        window.sessionStorage.setItem("authorizationadmin",data.token)
         alert('Login successful!');
-        navigate('/home'); // Change this to your desired route after login
+        navigate('/admindashboard'); // Change this to your desired route after login
       } catch (error) {
         setErrors({ api: 'Login failed. Please try again.' });
       } finally {
@@ -63,12 +62,6 @@ const LoginForm = ({ setIsLoggedIn }) => {
     }
   };
 
-  const handleSignupClick = () => {
-    navigate('/signup');
-  };
-  const handleSignupClickAdmin = () => {
-    navigate('/adminlogin');
-  };
 
   return (
     <div
@@ -80,7 +73,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
       }}
     >
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm bg-opacity-90">
-        <h1 className="text-3xl font-bold mb-6 text-center">Login</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center">Admin Login</h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium mb-1">Enter Email</label>
@@ -114,30 +107,9 @@ const LoginForm = ({ setIsLoggedIn }) => {
             {isSubmitting ? 'Submitting...' : 'Login'}
           </button>
         </form>
-
-        <div className="mt-4 text-center">
-          <p className="text-sm">
-            Don't have an account?{' '}
-            <button
-              onClick={handleSignupClick}
-              className="text-blue-500 hover:underline focus:outline-none"
-            >
-              Sign up
-            </button>
-          </p>
-          <p className="text-sm">
-            Log In Admin{' '}
-            <button
-              onClick={handleSignupClickAdmin}
-              className="text-blue-500 hover:underline focus:outline-none"
-            >
-              Login Admin
-            </button>
-          </p>
-        </div>
       </div>
     </div>
   );
 };
 
-export default LoginForm;
+export default AdminLogin;

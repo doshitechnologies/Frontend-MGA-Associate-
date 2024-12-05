@@ -10,7 +10,7 @@ const ViewUsers = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 5;
-  const token = window.localStorage.getItem('authorization');
+  const token = window.sessionStorage.getItem('authorization');
 
   const fetchUsers = async () => {
     try {
@@ -22,7 +22,7 @@ const ViewUsers = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'authheader': `${token}`
         }
       });
 
@@ -35,9 +35,9 @@ const ViewUsers = () => {
     } catch (err) {
       console.error("Error fetching users:", err);
       setError(err.message);
-      if (err.message === 'No authorization token found') {
-        navigate('/login');
-      }
+    //   if (err.message === 'No authorization token found') {
+    //     navigate('/login');
+    //   }
     } finally {
       setLoading(false);
     }
@@ -66,11 +66,6 @@ const ViewUsers = () => {
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
-  };
-
-  const logoutHandler = () => {
-    window.localStorage.removeItem('authorization');
-    navigate('/login');
   };
 
   const handleDelete = async (userId) => {
