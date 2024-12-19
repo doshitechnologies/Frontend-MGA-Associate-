@@ -1,44 +1,31 @@
 import React from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 
-function ForgetPassword() {
-  const [email, setEmail] = useState("");
+function ResetPassword() {
+  const [newPassword, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate();
+  const token =  searchParams.get('token');
 
-  const validate = () => {
-    const newErrors = {};
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!email) {
-      newErrors.email = "Email is required";
-    } else if (!emailPattern.test(email)) {
-      newErrors.email = "Invalid email format";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validate()) {
       setIsSubmitting(true);
       try {
         const response = await fetch(
-          "https://projectassoicate.onrender.com/api/auth/forgot-password",
+          "https://projectassoicate.onrender.com/api/auth/reset-password",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email }),
+            body: JSON.stringify({ token,newPassword }),
           }
         );
         if (!response.ok) throw new Error("Failed to send reset email");
-        const data = await response.json();
-        console.log(data);
+        await response.json();
         setErrors({});
         alert("Password reset email sent. Please check your email.");
         navigate("/"); // Redirect to login after success
@@ -47,7 +34,7 @@ function ForgetPassword() {
       } finally {
         setIsSubmitting(false);
       }
-    }
+    
   };
     
   return (
@@ -66,20 +53,17 @@ function ForgetPassword() {
           <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium mb-1">
-              Enter Email
+              Enter new Password
             </label>
             <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="password"
+              id="password"
+              value={newPassword}
+              onChange={(e) => setPassword(e.target.value)}
               className={`w-full p-2 border rounded-md ${
-                errors.email ? "border-red-500" : "border-gray-300"
+                errors.newPassword ? "border-red-500" : "border-gray-300"
               }`}
             />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-            )}
           </div>
           {errors.api && (
             <p className="text-red-500 text-sm mb-4">{errors.api}</p>
@@ -91,7 +75,7 @@ function ForgetPassword() {
             }`}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Submitting..." : "Send Reset Password Email"}
+            {isSubmitting ? "Submitting..." : "Reset Password"}
           </button>
         </form>
         </div>
@@ -100,4 +84,4 @@ function ForgetPassword() {
   );
 }
 
-export default ForgetPassword;
+export default ResetPassword;
