@@ -5,7 +5,7 @@ import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { saveAs } from "file-saver";
 
-const ShowArchitecture = () => {
+const ShowInteriorProject = () => {
   const { projectId } = useParams();
   const [projectData, setProjectData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,18 +18,19 @@ const ShowArchitecture = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://projectassociate-fld7.onrender.com/api/architecture/data/${projectId}`
+        `https://projectassociate-fld7.onrender.com/api/interior/interior/${projectId}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch project data");
       }
       const data = await response.json();
       if (!data) {
-        setLoading(true)
+        setLoading(true);
       }
       setProjectData(data.data);
       setEditingProject(data.data); // Initialize editing project data
-      setLoading(false)
+      setLoading(false);
+      console.log(data);
     } catch (error) {
       console.error("Error fetching project data:", error);
       toast.error("Failed to fetch project data. Please try again.");
@@ -53,7 +54,7 @@ const ShowArchitecture = () => {
   const handleUpdate = async () => {
     try {
       const response = await fetch(
-        `https://projectassociate-fld7.onrender.com/api/architecture/update/${editingProject._id}`,
+        `https://projectassociate-fld7.onrender.com/api/interior/update/interiors/${editingProject._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -95,6 +96,54 @@ const ShowArchitecture = () => {
       });
   };
 
+  const handleRemoveImage = async (sectionName, indexToRemove) => {
+    if (!window.confirm('Are you sure you want to delete this file?')) return;
+
+    try {
+      setEditingProject((prevState) => {
+        const updatedSection = prevState[sectionName].filter(
+          (_, index) => index !== indexToRemove
+        );
+        const updatedState = { ...prevState, [sectionName]: updatedSection };
+
+        // Sync projectData to reflect changes immediately
+        setProjectData((prevProjectData) => ({
+          ...prevProjectData,
+          [sectionName]: updatedSection,
+        }));
+
+        return updatedState;
+      });
+
+      // Extract the file URL before state update
+      const toDeleteSection = editingProject[sectionName][indexToRemove];
+
+      if (!toDeleteSection) {
+        console.error('No file found to delete');
+        return;
+      }
+
+      const response = await fetch(
+        `https://projectassociate-fld7.onrender.com/api/auth/file/${encodeURIComponent(toDeleteSection)}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete file');
+      }
+
+      toast.success("File deleted successfully!");
+    } catch (err) {
+      console.error('Error deleting file:', err);
+    }
+  };
+
   const handleDownloadImage = async (fileUrl, fileName) => {
     try {
       const response = await fetch(fileUrl);
@@ -122,10 +171,15 @@ const ShowArchitecture = () => {
       );
 
       const fileUrl = data.fileUrl;
+      if (!fileUrl) {
+        setEditingProject({
+          ...editingProject,
+        });
+      }
       setEditingProject({
         ...editingProject,
-        [sectionName]: [...editingProject[sectionName], fileUrl]
-      })
+        [sectionName]: [...editingProject[sectionName], fileUrl],
+      });
       toast.success("File uploaded successfully!");
     } catch (error) {
       console.error("File upload failed:", error);
@@ -134,6 +188,88 @@ const ShowArchitecture = () => {
       setUploadingSection(null);
     }
   };
+
+  const myMap = new Map([
+    ["title", "Title"],
+    ["clientName", "Client Name"],
+    ["siteAddress", "Site Address"],
+    ["gstNo", "GST Number"],
+    ["projectHead", "Project Head"],
+    ["leadFirm", "Lead Firm"],
+    ["rccDesignerName", "RCC Designer Name"],
+    ["Aadhar", "Aadhar"],
+    ["Pan", "PAN"],
+    ["Pin", "Pin"],
+    ["email", "Email"],
+    ["Presentation_DrawingI", "Presentation Drawing"],
+    ["Estimate", "Estimate"],
+    ["ThreeD_Model", "3D Model"],
+    ["Ceiling", "Ceiling"],
+    ["Electrical", "Electrical"],
+    ["Plumbing", "Plumbing"],
+    ["Flooring", "Flooring"],
+    ["Bill", "Bill"],
+    ["Site_Photo", "Site Photos"],
+    ["Curtains", "Curtains"],
+    ["Door_Handle", "Door Handle"],
+    ["Hinges", "Hinges"],
+    ["Venner", "Venner"],
+    ["Laminates", "Laminates"]
+  ]);
+
+  const renderSection = (sectionName, fields) => (
+    <div className="mb-4">
+      <div
+        className="flex justify-between items-center cursor-pointer bg-blue-100 px-4 py-3 rounded-lg shadow"
+        onClick={() => toggleSection(sectionName)}
+      >
+        <h3 className="text-xl font-bold text-blue-700">{sectionName}</h3>
+        <button>
+          {expandedSections[sectionName] ? "▲" : "▼"}
+        </button>
+      </div>
+      {sectionName === "Project Details" ?
+        expandedSections[sectionName] && (
+          <div className="mt-2 ml-4">
+            <table className="table-auto border-collapse border border-gray-300 w-full">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-300 px-4 py-2">Field</th>
+                  <th className="border border-gray-300 px-4 py-2">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {fields.map((field) => (
+                  <tr key={field} className="text-gray-800">
+                    <td className="border border-gray-300 px-4 py-2 font-bold">{myMap.get(field)}</td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {editing ? (
+                        <input
+                          type="text"
+                          name={field}
+                          value={editingProject[field] || ""}
+                          onChange={handleChange}
+                          className="border p-2 rounded w-full"
+                        />
+                      ) : (
+                        <p>{projectData[field]}</p>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) :
+        expandedSections[sectionName] && (
+          <div className="mt-2 ml-4">
+            {fields.map((field) => (
+              renderFileInputs(field)
+            ))}
+          </div>
+        )}
+    </div>
+  );
 
   const renderFileInputs = (sectionName) => (
     <div>
@@ -144,7 +280,8 @@ const ShowArchitecture = () => {
           onChange={(e) => uploadFileHandler(e, sectionName)}
           className="text-blue-500 text-sm mb-4"
         />
-      )}
+      )
+      }
       {uploadingSection === sectionName && (
         <p className="text-blue-600 font-medium">Uploading...</p>
       )}
@@ -214,6 +351,28 @@ const ShowArchitecture = () => {
                       <line x1="12" y1="2" x2="12" y2="15"></line>
                     </svg>
                   </button>
+                  {editing && (
+                    <button
+                      onClick={() => handleRemoveImage(sectionName, index)}
+                      className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 shadow-md"
+                      title="Remove File"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M6 2L18 2L18 20L6 20L6 2Z"></path>
+                        <path d="M9 2V20"></path>
+                        <path d="M15 2V20"></path>
+                      </svg>
+                    </button>
+                  )}
                 </div>
                 <p className="text-center mt-2">{decodeURIComponent(fileName)}</p>
               </div>
@@ -223,102 +382,6 @@ const ShowArchitecture = () => {
           <p>No File Present</p>
         )}
       </div>
-    </div>
-  );
-
-  const myMap = new Map([
-    ["title", "Title"],
-    ["clientName", "Client Name"],
-    ["siteAddress", "Site Address"],
-    ["gstNo", "GST Number"],
-    ["projectHead", "Project Head"],
-    ["leadFirm", "Lead Firm"],
-    ["rccDesignerName", "RCC Designer Name"],
-    ["Aadhar", "Aadhar"],
-    ["PAN", "PAN"],
-    ["Pin", "Pin"],
-    ["email", "Email"],
-    ["Area_Calculations", "Area Calculations"],
-    ["Presentation_Drawings", "Presentation Drawings"],
-    ["Submission_Drawings", "Submission Drawings"],
-    ["Center_Line", "Center Line"],
-    ["Floor_Plans", "Floor Plans"],
-    ["Sections", "Sections"],
-    ["Elevations", "Elevations"],
-    ["Compound_Wall_Details", "Compound_Wall Details"],
-    ["Toilet_Layouts", "Toilet Layouts"],
-    ["Electric_Layouts", "Electric Layouts"],
-    ["Tile_Layouts", "Tile Layouts"],
-    ["Grill_Details", "Grill Details"],
-    ["Railing_Details", "Railing Details"],
-    ["Column_footing_Drawings", "Column Footing Drawings"],
-    ["Plinth_Beam_Drawings", "Plinth Beam Drawings"],
-    ["StairCase_Details", "StairCase Details"],
-    ["Slab_Drawings", "Slab Drawings"],
-    ["Property_Card", "Property Card"],
-    ["Property_Map", "Property Map"],
-    ["Sanction_Drawings", "Sanction Drawings"],
-    ["Revise_Sanction_Drawings", "Revise Sanction Drawings"],
-    ["Completion_Drawings", "Completion Drawings"],
-    ["Completion_Letter", "Completion Letter"],
-    ["Estimate", "Estimate"],
-    ["Bills_Documents", "Bills"],
-    ["Consultancy_Fees", "Consultancy Fees"],
-    ["Site_Photos", "Site Photos"],
-    ["Other_Documents", "Other Documents"]
-  ]);
-
-  const renderSection = (sectionName, fields) => (
-    <div className="mb-4">
-      <div
-        className="flex justify-between items-center cursor-pointer bg-blue-100 px-4 py-3 rounded-lg shadow"
-        onClick={() => toggleSection(sectionName)}
-      >
-        <h3 className="text-xl font-bold text-blue-700">{sectionName}</h3>
-        <button>
-          {expandedSections[sectionName] ? "▲" : "▼"}
-        </button>
-      </div>
-      {sectionName === "Project Details" ?
-        expandedSections[sectionName] && (
-          <div className="mt-2 ml-4">
-            <table className="table-auto border-collapse border border-gray-300 w-full">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border border-gray-300 px-4 py-2">Field</th>
-                  <th className="border border-gray-300 px-4 py-2">Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {fields.map((field) => (
-                  <tr key={field} className="text-gray-800">
-                    <td className="border border-gray-300 px-4 py-2 font-bold">{myMap.get(field)}</td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {editing ? (
-                        <input
-                          type="text"
-                          name={field}
-                          value={editingProject[field] || ""}
-                          onChange={handleChange}
-                          className="border p-2 rounded w-full"
-                        />
-                      ) : (
-                        <p>{projectData[field]}</p>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) :
-        expandedSections[sectionName] && (
-          <div className="mt-2 ml-4">
-            {fields.map((field) => (
-              renderFileInputs(field)
-            ))}
-          </div>
-        )}
     </div>
   );
 
@@ -349,53 +412,44 @@ const ShowArchitecture = () => {
               "gstNo",
               "projectHead",
               "leadFirm",
-              "rccDesignerName",
               "Aadhar",
-              "PAN",
+              "Pan",
               "Pin",
               "email",
             ])}
-            {renderSection("Drawings", [
-              "Area_Calculations",
-              "Presentation_Drawings",
-              "Submission_Drawings",
+            {renderSection("Presentation Drawing", [
+              "Presentation_DrawingI",
             ])}
-            {renderSection("Working Drawings", [
-              "Center_Line",
-              "Floor_Plans",
-              "Sections",
-              "Elevations",
+            {renderSection("Ceiling Detail", [
+              "Ceiling",
             ])}
-            {renderSection("Detail Drawings", [
-              "Compound_Wall_Details",
-              "Toilet_Layouts",
-              "Electric_Layouts",
-              "Tile_Layouts",
-              "Grill_Details",
-              "Railing_Details",
+            {renderSection("Electrical Layout", [
+              "Electrical",
             ])}
-            {renderSection("RCC", [
-              "Column_footing_Drawings",
-              "Plinth_Beam_Drawings",
-              "StairCase_Details",
-              "Slab_Drawings",
+            {renderSection("Door Handles & Curtains", [
+              "Door_Handle",
+              "Curtains",
             ])}
-            {renderSection("Documents & Other", [
-              "Property_Card",
-              "Property_Map",
-              "Sanction_Drawings",
-              "Revise_Sanction_Drawings",
-              "Completion_Drawings",
-              "Completion_Letter",
+            {renderSection("Furniture Details", [
+              "Laminates",
+              "Venner",
+              "Hinges"
             ])}
-            {renderSection("Estimates & Bills", [
+            {renderSection("Plumbing Layout", [
+              "Plumbing",
+            ])}
+            {renderSection("3D Model", [
+              "ThreeD_Model",
+            ])}
+            {renderSection("Flooring Layout", [
+              "Flooring",
+            ])}
+            {renderSection("Estimate & Bills", [
               "Estimate",
-              "Bills_Documents",
-              "Consultancy_Fees"
+              "Bill"
             ])}
             {renderSection("Onsite Photos", [
-              "Site_Photos",
-              "Other_Documents"
+              "Site_Photo",
             ])}
 
             <div className="flex justify-center space-x-4 mt-4">
@@ -434,5 +488,4 @@ const ShowArchitecture = () => {
   );
 };
 
-export default ShowArchitecture;
-
+export default ShowInteriorProject;
