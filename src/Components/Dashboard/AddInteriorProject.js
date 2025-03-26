@@ -31,6 +31,14 @@ const AddInteriorProject = ({ isActive, onClick }) => {
       Estimate: [],
       Bill: [],
       Site_Photo: [],
+      Ceiling_Shop: [],
+      Ground: [],
+      First: [],
+      Second: [],
+      Third: [],
+      Fourth: [],
+      Fifth: [],
+      Sixth: [],
     },
   });
 
@@ -73,7 +81,7 @@ const AddInteriorProject = ({ isActive, onClick }) => {
           formDataToUpload.append("file", file);
 
           const { data } = await axios.post(
-            "https://projectassociate-fld7.onrender.com/api/auth/upload",
+            `https://projectassociate-fld7.onrender.com/api/auth/upload`,
             formDataToUpload
           );
 
@@ -81,16 +89,17 @@ const AddInteriorProject = ({ isActive, onClick }) => {
         })
       );
 
-      setFormData((prev) => ({
-        ...prev,
-        documentSections: {
+      setFormData((prev) => {
+        const updatedDocumentSections = {
           ...prev.documentSections,
-          [sectionName]: [
-            ...prev.documentSections[sectionName],
-            ...uploadedUrls,
-          ],
-        },
-      }));
+          [sectionName]: [...(prev.documentSections[sectionName] || []), ...uploadedUrls],
+        };
+
+        return {
+          ...prev,
+          documentSections: updatedDocumentSections,
+        };
+      });
 
       toast.success("Files uploaded successfully!");
     } catch (error) {
@@ -103,6 +112,8 @@ const AddInteriorProject = ({ isActive, onClick }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+
     const transformedObject = {
       ...formData,
       ...formData.documentSections,
@@ -119,10 +130,49 @@ const AddInteriorProject = ({ isActive, onClick }) => {
 
     try {
       await axios.post(
-        "https://projectassociate-fld7.onrender.com/api/interior/interiors",
+        `https://projectassociate-fld7.onrender.com/api/interior/interiors`,
         transformedObject
       );
       toast.success("Interior project added successfully!");
+
+      // Reset the form data *after* the API call
+      setFormData({
+        title: "",
+        clientName: "",
+        siteAddress: "",
+        gstNo: "",
+        projectHead: "",
+        leadFirm: "",
+        Pan: "",
+        Aadhar: "",
+        Pin: "",
+        email: "",
+        documentSections: {
+          Presentation_DrawingI: [],
+          Ceiling: [],
+          Electrical: [],
+          Door_Handle: [],
+          Curtains: [],
+          Furniture: [],
+          Laminates: [],
+          Venner: [],
+          Hinges: [],
+          Plumbing: [],
+          ThreeD_Model: [],
+          Flooring: [],
+          Estimate: [],
+          Bill: [],
+          Site_Photo: [],
+          Shop: [],
+          Ground: [],
+          First: [],
+          Second: [],
+          Third: [],
+          Fourth: [],
+          Fifth: [],
+          Sixth: [],
+        },
+      });
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Error submitting form: " + error.message);
@@ -130,6 +180,7 @@ const AddInteriorProject = ({ isActive, onClick }) => {
       setLoading(false);
     }
   };
+
 
   const renderFormInput = (label, name, placeholder, type = "text") => (
     <div className="col-span-1">
@@ -150,53 +201,105 @@ const AddInteriorProject = ({ isActive, onClick }) => {
     </div>
   );
 
-  const renderFileInputs = (sectionName, label) => (
-    <div className="p-4 bg-blue-100 rounded-lg shadow-md">
-      <h3 className="font-semibold text-gray-700 mb-2">{label}</h3>
-      <input
-        type="file"
-        multiple
-        onChange={(e) => uploadFileHandler(e, sectionName)}
-        className="text-blue-500 text-sm mb-2 hover:underline"
-      />
-      {uploadingSection === sectionName && (
-        <p className="text-blue-600 font-medium">Uploading...</p>
-      )}
-      <ul>
-        {formData.documentSections[sectionName].map((fileUrl, index) => (
-          <li key={index} className="text-sm text-gray-600 truncate">
-            <span className="p-1 font-semibold">{index + 1}.</span>
-            {fileUrl.endsWith(".pdf") ? (
-              <a
-                href={fileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-blue-600"
+  const renderFileInputs = (sectionName, label) => {
+
+    const formatLabel = (label) => {
+      const newLabel = label.replace(/_/g, " ");
+      const words = newLabel.split(" ");
+      const lastWord = words[words.length - 1];
+
+      const removableWords = ["Shop", "Ground", "First", "Second", "Third", "Fourth", "Fifth"];
+
+      if (removableWords.includes(lastWord) && words.length > 1) {
+        return words.slice(1).join(" ");
+      }
+
+      return newLabel;
+    };
+
+
+    return (
+      <div className="p-4 bg-blue-100 rounded-lg shadow-md">
+        <h3 className="font-semibold text-gray-700 mb-2">{formatLabel(label)}</h3>
+        <input
+          type="file"
+          multiple
+          onChange={(e) => uploadFileHandler(e, sectionName)}
+          className="text-blue-500 text-sm mb-2 hover:underline"
+        />
+        {uploadingSection === sectionName && (
+          <p className="text-blue-600 font-medium">Uploading...</p>
+        )}
+        <ul>
+          {formData.documentSections[sectionName]?.map((fileUrl, index) => (
+            <li
+              key={index}
+              className="text-sm text-gray-600 truncate flex items-center justify-between"
+            >
+              <div className="flex items-center">
+                <span className="p-1 font-semibold">{index + 1}.</span>
+                {fileUrl.endsWith(".pdf") ? (
+                  <a
+                    href={fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-blue-600"
+                  >
+                    View PDF
+                  </a>
+                ) : (
+                  <img
+                    src={fileUrl}
+                    alt={`Uploaded file ${index + 1}`}
+                    className="w-20 h-20 object-cover rounded-md"
+                  />
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  try {
+                    await axios.delete(
+                      `https://projectassociate-fld7.onrender.com/api/auth/file/${encodeURIComponent(fileUrl)}`
+                    );
+                    setFormData((prevFormData) => {
+                      const updatedFiles = [...prevFormData.documentSections[sectionName]];
+                      updatedFiles.splice(index, 1);
+                      return {
+                        ...prevFormData,
+                        documentSections: {
+                          ...prevFormData.documentSections,
+                          [sectionName]: updatedFiles,
+                        },
+                      };
+                    });
+                    toast.success("File deleted successfully!");
+                  } catch (error) {
+                    console.error("Error deleting file:", error);
+                    toast.error("Failed to delete file.");
+                  }
+                }}
+                className="text-red-600 hover:text-red-800"
               >
-                View PDF
-              </a>
-            ) : (
-              <img
-                src={fileUrl}
-                alt={`Uploaded file ${index + 1}`}
-                className="w-20 h-20 object-cover rounded-md"
-              />
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+                &#x2716;
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  };
 
   const documentGroups = [
     { heading: "Presentation", sections: ["Presentation_DrawingI"] },
-    { heading: "Ceiling", sections: ["Ceiling"] },
-    { heading: "Electricals", sections: ["Electrical"] },
-    { heading: "Door Handles & Curtains", sections: ["Door_Handle", "Curtains"] },
-    { heading: "Furniture Details", sections: ["Laminates", "Venner", "Hinges"] },
-    { heading: "Plumbing", sections: ["Plumbing"] },
+    { heading: "Ceiling", sections: ["Ceiling_Shop", "Ceiling_Ground", "Ceiling_First", "Ceiling_Second", "Ceiling_Third", "Ceiling_Fourth", "Ceiling_Fifth"] },
+    { heading: "Electricals", sections: ["Electrical_Shop", "Electrical_Ground", "Electrical_First", "Electrical_Second", "Electrical_Third", "Electrical_Fourth", "Electrical_Fifth"] },
+    { heading: "Furniture Details", sections: ["Furniture_Shop", "Furniture_Ground", "Furniture_First", "Furniture_Second", "Furniture_Third", "Furniture_Fourth", "Furniture_Fifth"] },
+    { heading: "Plumbing", sections: ["Plumbing_Shop", "Plumbing_Ground", "Plumbing_First", "Plumbing_Second", "Plumbing_Third", "Plumbing_Fourth", "Plumbing_Fifth"] },
     { heading: "3D Model", sections: ["ThreeD_Model"] },
-    { heading: "Flooring", sections: ["Flooring"] },
+    { heading: "Flooring", sections: ["Flooring_Shop", "Flooring_Ground", "Flooring_First", "Flooring_Second", "Flooring_Third", "Flooring_Fourth", "Flooring_Fifth"] },
+    { heading: "Material Selection", sections: ["Door_Handle", "Curtains", "Laminates", "Venner", "Hinges"] },
     { heading: "Estimates & Bills", sections: ["Estimate", "Bill"] },
     { heading: "Onsite Photos", sections: ["Site_Photo"] },
   ];
@@ -205,9 +308,8 @@ const AddInteriorProject = ({ isActive, onClick }) => {
     <div className="w-full max-w-6xl mx-auto p-8 bg-white rounded-lg shadow-lg">
       <ToastContainer />
       <button
-        className={`w-full p-3 mb-6 rounded-lg transition-all font-semibold text-lg ${
-          isActive ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"
-        }`}
+        className={`w-full p-3 mb-6 rounded-lg transition-all font-semibold text-lg ${isActive ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"
+          }`}
         onClick={onClick}
       >
         Add Interior Project
@@ -240,9 +342,8 @@ const AddInteriorProject = ({ isActive, onClick }) => {
         ))}
         <button
           type="submit"
-          className={`w-full p-3 text-lg font-medium rounded-lg text-white bg-blue-600 ${
-            loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
-          }`}
+          className={`w-full p-3 text-lg font-medium rounded-lg text-white bg-blue-600 ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+            }`}
           disabled={loading}
         >
           {loading ? "Submitting..." : "Submit Project"}

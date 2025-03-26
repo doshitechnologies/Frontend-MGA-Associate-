@@ -9,7 +9,7 @@ import { useAdmin } from "../context/AdminContext";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("viewData");
-  const [sidebarOpen, setSidebarOpen] = useState(false); // Sidebar toggle state
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const { isAdmin } = useAdmin();
 

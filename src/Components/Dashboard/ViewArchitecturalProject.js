@@ -10,14 +10,14 @@ const ViewArchitecturalProject = () => {
   const [projectsPerPage] = useState(9);
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
-  const API_URL = 'https://projectassociate-fld7.onrender.com/api/architecture/data'; 
+  const API_URL = `https://projectassociate-fld7.onrender.com/api/architecture/data`;
 
   useEffect(() => {
     const fetchProjects = async () => {
       setLoading(true);
       setError(null); // Reset error state before fetching
       try {
-        const response = await fetch(API_URL);
+        const response = await fetch(`https://projectassociate-fld7.onrender.com/api/architecture/data`);
         if (!response.ok) {
           throw new Error('Failed to fetch projects');
         }
@@ -84,11 +84,10 @@ const ViewArchitecturalProject = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {currentProjects.length > 0 ? (
           currentProjects.map((project) => (
-            <ProjectCard 
-              key={project._id} 
-              project={project} 
-              handleShowMore={handleShowMore} 
-              // handleDelete={handleDelete} 
+            <ProjectCard
+              key={project._id}
+              project={project}
+              handleShowMore={handleShowMore}
             />
           ))
         ) : (
@@ -97,10 +96,10 @@ const ViewArchitecturalProject = () => {
       </div>
 
       {totalPages > 1 && (
-        <Pagination 
-          currentPage={currentPage} 
-          setCurrentPage={setCurrentPage} 
-          totalPages={totalPages} 
+        <Pagination
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          totalPages={totalPages}
         />
       )}
     </div>
@@ -118,7 +117,7 @@ const ProjectCard = ({ project, handleShowMore, handleDelete }) => {
         <p><span className="font-medium">Type:</span> {displayData(project.projectType)}</p>
         <p><span className="font-medium">Project Head:</span> {displayData(project.projectHead)}</p>
         <div className="p-4 border-t flex justify-around">
-          <button 
+          <button
             onClick={() => handleShowMore(project._id)}
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
           >

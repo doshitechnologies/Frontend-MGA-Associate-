@@ -10,7 +10,7 @@ const ViewInteriorProject = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  const API_URL = 'https://projectassociate-fld7.onrender.com/api/interior';
+  const API_URL = `https://projectassociate-fld7.onrender.com/api/interior`;
 
   useEffect(() => {
     fetchProjects();
@@ -19,7 +19,7 @@ const ViewInteriorProject = () => {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const response = await fetch(API_URL);
+      const response = await fetch(`https://projectassociate-fld7.onrender.com/api/interior`);
       if (!response.ok) throw new Error('Failed to fetch projects');
       const data = await response.json();
       console.log(data)
@@ -36,7 +36,7 @@ const ViewInteriorProject = () => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`${API_URL}/interiors/${projectId}`, {
+      const response = await fetch(`https://projectassociate-fld7.onrender.com/api/interiors/${projectId}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to delete project');
@@ -100,7 +100,7 @@ const ViewInteriorProject = () => {
             key={project._id}
             project={project}
             handleShowMore={handleShowMore}
-            // deleteProject={deleteProject}
+          // deleteProject={deleteProject}
           />
         ))}
       </div>
@@ -122,7 +122,7 @@ const ProjectCard = ({ project, handleShowMore, deleteProject }) => (
     <div className="p-6 flex-grow">
       <h3 className="text-lg font-bold mb-4 text-center">Title: {project.title}</h3>
       <div className="space-y-2 text-gray-600 text-center">
-      <p><span className="font-medium">Client:</span> {displayData(project.clientName)}</p>
+        <p><span className="font-medium">Client:</span> {displayData(project.clientName)}</p>
         <p><span className="font-medium">Type:</span> {displayData(project.projectType)}</p>
         <p><span className="font-medium">Project Head:</span> {displayData(project.projectHead)}</p>
         {/* <p><span className="font-medium">Rcc Designer Name:</span> {displayData(project.rccDesignerName)}</p> */}

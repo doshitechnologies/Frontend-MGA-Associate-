@@ -14,7 +14,7 @@ const ViewArchitecturalProject = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       setLoading(true);
-      setError(null); // Reset error state before fetching
+      setError(null);
       try {
         const response = await fetch(API_URL);
         if (!response.ok) {
@@ -96,11 +96,11 @@ const ViewArchitecturalProject = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {currentProjects.length > 0 ? (
           currentProjects.map((project) => (
-            <ProjectCard 
-              key={project._id} 
-              project={project} 
-              handleShowMore={handleShowMore} 
-              handleDelete={handleDelete} 
+            <ProjectCard
+              key={project._id}
+              project={project}
+              handleShowMore={handleShowMore}
+              handleDelete={handleDelete}
             />
           ))
         ) : (
@@ -109,10 +109,10 @@ const ViewArchitecturalProject = () => {
       </div>
 
       {totalPages > 1 && (
-        <Pagination 
-          currentPage={currentPage} 
-          setCurrentPage={setCurrentPage} 
-          totalPages={totalPages} 
+        <Pagination
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          totalPages={totalPages}
         />
       )}
     </div>
@@ -146,13 +146,13 @@ const ProjectCard = ({ project, handleShowMore, handleDelete }) => {
         <p><span className="font-medium">Email:</span> {displayData(project.email)}</p>
         <p><span className="font-medium">GST No:</span> {displayData(project.gstNo)}</p>
         <div className="p-4 border-t flex justify-around">
-          <button 
+          <button
             onClick={() => handleShowMore(project._id)}
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
           >
             Show More
           </button>
-          <button 
+          <button
             onClick={() => confirmDelete(project._id)}
             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors flex items-center"
           >

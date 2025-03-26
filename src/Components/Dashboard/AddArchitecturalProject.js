@@ -87,7 +87,7 @@ const AddArchitectureProject = ({ isActive, onClick }) => {
           formDataToUpload.append("file", file);
 
           const { data } = await axios.post(
-            "https://projectassociate-fld7.onrender.com/api/auth/uploadarchitecture",
+            `https://projectassociate-fld7.onrender.com/api/auth/uploadarchitecture`,
             formDataToUpload
           );
 
@@ -95,16 +95,17 @@ const AddArchitectureProject = ({ isActive, onClick }) => {
         })
       );
 
-      setFormData((prev) => ({
-        ...prev,
-        documentSections: {
+      setFormData((prev) => {
+        const updatedDocumentSections = {
           ...prev.documentSections,
-          [sectionName]: [
-            ...(prev.documentSections[sectionName] || []),
-            ...uploadedUrls,
-          ],
-        },
-      }));
+          [sectionName]: [...(prev.documentSections[sectionName] || []), ...uploadedUrls],
+        };
+
+        return {
+          ...prev,
+          documentSections: updatedDocumentSections,
+        };
+      });
 
       toast.success("Files uploaded successfully!");
     } catch (error) {
@@ -117,6 +118,9 @@ const AddArchitectureProject = ({ isActive, onClick }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+
+
     const transformedObject = {
       ...formData,
       ...formData.documentSections,
@@ -125,19 +129,63 @@ const AddArchitectureProject = ({ isActive, onClick }) => {
 
     if (Object.keys(errors).length > 0) {
       toast.error("Please fix the errors before submitting.");
+      setLoading(false);
       return;
     }
 
-    setLoading(true);
     try {
       await axios.post(
-        "https://projectassociate-fld7.onrender.com/api/architecture/upload",
+        `https://projectassociate-fld7.onrender.com/api/architecture/upload`,
         transformedObject
       );
       toast.success("Architecture project added successfully!");
+
+      setFormData({
+        title: "",
+        clientName: "",
+        siteAddress: "",
+        gstNo: "",
+        projectHead: "",
+        leadFirm: "",
+        rccDesignerName: "",
+        PAN: "",
+        Aadhar: "",
+        Pin: "",
+        email: "",
+        documentSections: {
+          Area_Calculations: [],
+          Presentation_Drawings: [],
+          Submission_Drawings: [],
+          Center_Line: [],
+          Floor_Plans: [],
+          Sections: [],
+          Elevations: [],
+          Compound_Wall_Details: [],
+          Toilet_Layouts: [],
+          Electric_Layouts: [],
+          Tile_Layouts: [],
+          Grill_Details: [],
+          Railing_Details: [],
+          Column_footing_Drawings: [],
+          Plinth_Beam_Drawings: [],
+          StairCase_Details: [],
+          Slab_Drawings: [],
+          Property_Card: [],
+          Property_Map: [],
+          Sanction_Drawings: [],
+          Revise_Sanction_Drawings: [],
+          Completion_Drawings: [],
+          Completion_Letter: [],
+          Estimate: [],
+          Bills_Documents: [],
+          Consultancy_Fees: [],
+          Site_Photos: [],
+          Other_Documents: [],
+        }
+      })
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("Error submitting form: ${error.message}");
+      toast.error(`Error submitting form: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -168,7 +216,7 @@ const AddArchitectureProject = ({ isActive, onClick }) => {
     ["siteAddress", "Site Address"],
     ["gstNo", "GST Number"],
     ["projectHead", "Project Head"],
-    ["leadFirm","Lead Firm"],
+    ["leadFirm", "Lead Firm"],
     ["rccDesignerName", "RCC Designer Name"],
     ["Aadhar", "Aadhar"],
     ["PAN", "PAN"],
@@ -204,6 +252,9 @@ const AddArchitectureProject = ({ isActive, onClick }) => {
     ["Other_Documents", "Other Documents"]
   ]);
 
+
+
+
   const renderFileInputs = (sectionName) => (
     <div className="p-4 bg-blue-100 rounded-lg shadow-md">
       <h3 className="font-semibold text-gray-700 mb-2">{myMap.get(sectionName)}</h3>
@@ -217,9 +268,9 @@ const AddArchitectureProject = ({ isActive, onClick }) => {
         <p className="text-blue-600 font-medium">Uploading...</p>
       )}
       <ul>
-        {(formData.documentSections[sectionName] || []).map(
-          (fileUrl, index) => (
-            <li key={index} className="text-sm text-gray-600 truncate">
+        {(formData.documentSections[sectionName] || []).map((fileUrl, index) => (
+          <li key={index} className="text-sm text-gray-600 truncate flex items-center justify-between">
+            <div className="flex items-center">
               <span className="p-1 font-semibold">{index + 1}.</span>
               {fileUrl.endsWith(".pdf") ? (
                 <a
@@ -233,16 +284,48 @@ const AddArchitectureProject = ({ isActive, onClick }) => {
               ) : (
                 <img
                   src={fileUrl}
-                  alt={"Uploaded file ${index + 1}"}
+                  alt={`Uploaded file ${index + 1}`}
                   className="w-20 h-20 object-cover rounded-md"
                 />
               )}
-            </li>
-          )
-        )}
+            </div>
+            <button
+              type="button"
+              onClick={async (e) => {
+                e.stopPropagation();
+                try {
+                  await axios.delete(
+                    `https://projectassociate-fld7.onrender.com/api/auth/filearchitecture/${encodeURIComponent(
+                      fileUrl
+                    )}`
+                  );
+                  setFormData((prevFormData) => {
+                    const updatedFiles = [...(prevFormData.documentSections[sectionName] || [])];
+                    updatedFiles.splice(index, 1);
+                    return {
+                      ...prevFormData,
+                      documentSections: {
+                        ...prevFormData.documentSections,
+                        [sectionName]: updatedFiles,
+                      },
+                    };
+                  });
+                  toast.success("File deleted successfully!");
+                } catch (error) {
+                  console.error("Error deleting file:", error);
+                  toast.error("Failed to delete file.");
+                }
+              }}
+              className="text-red-600 hover:text-red-800"
+            >
+              &#x2716;
+            </button>
+          </li>
+        ))}
       </ul>
-    </div>
+    </div >
   );
+
 
   const documentGroups = [
     { heading: "Drawings", sections: ["Area_Calculations", "Presentation_Drawings", "Submission_Drawings"] },

@@ -20,7 +20,7 @@ import ResetPassword from "./forget/ResetPassword";
 const App = () => {
   const navigate = useNavigate();
 
- 
+
   return (
     <>
       <AuthProvider>
@@ -38,7 +38,7 @@ const App = () => {
             <Route path="/admindashboard" element={<AdminDashboard />} />
             <Route path="/forgetpassword" element={<ForgetPassword />} />
             <Route path="/forgetEmail" element={<ForgetEmail />} />
-            <Route path="/resetpassword" element={<ResetPassword/>} />
+            <Route path="/resetpassword" element={<ResetPassword />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AdminProvider>

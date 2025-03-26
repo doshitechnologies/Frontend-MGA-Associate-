@@ -17,7 +17,7 @@ const ViewUsers = () => {
       if (!token) {
         throw new Error('No authorization token found');
       }
-      
+
       const response = await fetch('https://projectassociate-fld7.onrender.com/api/auth/users', {
         method: 'GET',
         headers: {
@@ -84,15 +84,15 @@ const ViewUsers = () => {
             'Authorization': `Bearer ${token}`
           }
         });
-  
+
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.message || 'Failed to delete user');
         }
-  
+
         // Update state to remove deleted user immediately
         setUsers(prevUsers => prevUsers.filter(user => user._id !== userId));
-  
+
         // Adjust current page if necessary
         if (currentUsers.length === 1 && currentPage > 1) {
           setCurrentPage(prev => prev - 1);
@@ -103,8 +103,8 @@ const ViewUsers = () => {
       }
     }
   };
-  
-  
+
+
 
   if (loading) {
     return (
@@ -173,8 +173,8 @@ const ViewUsers = () => {
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end space-x-4">
-                    <button 
-                      onClick={() => handleDelete(user._id)} 
+                    <button
+                      onClick={() => handleDelete(user._id)}
                       className="text-red-500 hover:text-red-700 transition-colors"
                       disabled={loading}
                     >
@@ -193,9 +193,8 @@ const ViewUsers = () => {
           <button
             key={index + 1}
             onClick={() => handlePageChange(index + 1)}
-            className={`px-3 py-1 rounded ${
-              currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
-            }`}
+            className={`px-3 py-1 rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
+              }`}
           >
             {index + 1}
           </button>

@@ -264,26 +264,26 @@ const ShowArchitecture = () => {
                   </button>
                   {editing && (
                     <button
-                    onClick={() => handleRemoveImage(sectionName, index)}
-                    className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 shadow-md"
-                    title="Remove File"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                      onClick={() => handleRemoveImage(sectionName, index)}
+                      className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 shadow-md"
+                      title="Remove File"
                     >
-                      <path d="M6 2L18 2L18 20L6 20L6 2Z"></path>
-                      <path d="M9 2V20"></path>
-                      <path d="M15 2V20"></path>
-                    </svg>
-                  </button>
-                )}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M6 2L18 2L18 20L6 20L6 2Z"></path>
+                        <path d="M9 2V20"></path>
+                        <path d="M15 2V20"></path>
+                      </svg>
+                    </button>
+                  )}
                 </div>
                 <p className="text-center mt-2">{decodeURIComponent(fileName)}</p>
               </div>

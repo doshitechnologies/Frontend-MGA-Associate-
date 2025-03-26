@@ -11,7 +11,7 @@ const ShowInteriorProject = () => {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [editingProject, setEditingProject] = useState({});
-  const [expandedSections, setExpandedSections] = useState({}); // Track dropdown states
+  const [expandedSections, setExpandedSections] = useState({});
   const [uploadingSection, setUploadingSection] = useState(null);
 
   const fetchProjectData = async () => {
@@ -28,7 +28,7 @@ const ShowInteriorProject = () => {
         setLoading(true);
       }
       setProjectData(data.data);
-      setEditingProject(data.data); // Initialize editing project data
+      setEditingProject(data.data);
       setLoading(false);
       console.log(data);
     } catch (error) {
@@ -39,10 +39,10 @@ const ShowInteriorProject = () => {
     }
   };
 
-  // Call the fetchProjectData on component mount and whenever projectId changes
+
   useEffect(() => {
     if (projectId) {
-      fetchProjectData(); // Call fetchProjectData globally
+      fetchProjectData();
     }
   }, [projectId]);
 
@@ -119,7 +119,7 @@ const ShowInteriorProject = () => {
       formData.append("file", file);
 
       const { data } = await axios.post(
-        "https://projectassociate-fld7.onrender.com/api/auth/upload",
+        `https://projectassociate-fld7.onrender.com/api/auth/upload`,
         formData
       );
 
@@ -167,7 +167,45 @@ const ShowInteriorProject = () => {
     ["Door_Handle", "Door Handle"],
     ["Hinges", "Hinges"],
     ["Venner", "Venner"],
-    ["Laminates", "Laminates"]
+    ["Laminates", "Laminates"],
+
+
+    ["Ceiling_Shop", "Shop"],
+    ["Ceiling_Ground", "Ground"],
+    ["Ceiling_First", "First"],
+    ["Ceiling_Second", "Second"],
+    ["Ceiling_Third", "Third"],
+    ["Ceiling_Fourth", "Fourth"],
+    ["Ceiling_Fifth", "Fifth"],
+    ["Electrical_Shop", "Shop"],
+    ["Electrical_Ground", "Ground"],
+    ["Electrical_First", "First"],
+    ["Electrical_Second", "Second"],
+    ["Electrical_Third", "Third"],
+    ["Electrical_Fourth", "Fourth"],
+    ["Electrical_Fifth", "Fifth"],
+    ["Furniture_Shop", "Shop"],
+    ["Furniture_Ground", "Ground"],
+    ["Furniture_First", "First"],
+    ["Furniture_Second", "Second"],
+    ["Furniture_Third", "Third"],
+    ["Furniture_Fourth", "Fourth"],
+    ["Furniture_Fifth", "Fifth"],
+    ["Plumbing_Shop", "Shop"],
+    ["Plumbing_Ground", "Ground"],
+    ["Plumbing_First", "First"],
+    ["Plumbing_Second", "Second"],
+    ["Plumbing_Third", "Third"],
+    ["Plumbing_Fourth", "Fourth"],
+    ["Plumbing_Fifth", "Fifth"],
+    ["Flooring", "Flooring"],
+    ["Flooring_Shop", "Shop"],
+    ["Flooring_Ground", "Ground"],
+    ["Flooring_First", "First"],
+    ["Flooring_Second", "Second"],
+    ["Flooring_Third", "Third"],
+    ["Flooring_Fourth", "Fourth"],
+    ["Flooring_Fifth", "Fifth"],
   ]);
 
   const renderSection = (sectionName, fields) => (
@@ -224,9 +262,9 @@ const ShowInteriorProject = () => {
     </div>
   );
 
-  const renderFileInputs = (sectionName) => (
+  const renderFileInputs = (sectionName, label) => (
     <div>
-      <h3 className="font-bold mb-2 text-2xl">{myMap.get(sectionName)}</h3>
+      <h3 className="font-bold mb-2 text-2xl">{myMap.get(label)}</h3>
       {editing && (
         <input
           type="file"
@@ -352,28 +390,59 @@ const ShowInteriorProject = () => {
               "Presentation_DrawingI",
             ])}
             {renderSection("Ceiling Detail", [
-              "Ceiling",
+              "Ceiling_Shop",
+              "Ceiling_Ground",
+              "Ceiling_First",
+              "Ceiling_Second",
+              "Ceiling_Third",
+              "Ceiling_Fourth",
+              "Ceiling_Fifth"
             ])}
             {renderSection("Electrical Layout", [
-              "Electrical",
+              "Electrical_Shop",
+              "Electrical_Ground",
+              "Electrical_First",
+              "Electrical_Third",
+              "Electrical_Fourth",
+              "Electrical_Fifth",
             ])}
-            {renderSection("Door Handles & Curtains", [
-              "Door_Handle",
-              "Curtains",
-            ])}
+
             {renderSection("Furniture Details", [
-              "Laminates",
-              "Venner",
-              "Hinges"
+              "Furniture_Shop",
+              "Furniture_Ground",
+              "Furniture_First",
+              "Furniture_Second",
+              "Furniture_Third",
+              "Furniture_Fourth",
+              "Furniture_Fifth"
             ])}
             {renderSection("Plumbing Layout", [
-              "Plumbing",
+              "Plumbing_Shop",
+              "Plumbing_Ground",
+              "Plumbing_First",
+              "Plumbing_Second",
+              "Plumbing_Third",
+              "Plumbing_Fourth",
+              "Plumbing_Fifth"
             ])}
             {renderSection("3D Model", [
               "ThreeD_Model",
             ])}
             {renderSection("Flooring Layout", [
-              "Flooring",
+              "Flooring_Shop",
+              "Flooring_Ground",
+              "Flooring_First",
+              "Flooring_Second",
+              "Flooring_Third",
+              "Flooring_Fourth",
+              "Flooring_Fifth"
+            ])}
+            {renderSection("Material Selection", [
+              "Door_Handle",
+              "Curtains",
+              "Laminates",
+              "Venner",
+              "Hinges"
             ])}
             {renderSection("Estimate & Bills", [
               "Estimate",
