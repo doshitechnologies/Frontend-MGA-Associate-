@@ -15,15 +15,15 @@ function ForgetEmail() {
 
         if (!phone) newErrors.phone = 'Phone number is required';
         else if (!phonePattern.test(phone)) newErrors.phone = 'Invalid phone number, it must be 10 digits';
-    
+
         setErrors(newErrors);
-    
+
         // Show alert with all errors
         if (Object.keys(newErrors).length > 0) {
             alert(Object.values(newErrors).join('\n'));
             return false;
         }
-    
+
         return true;
     };
 
@@ -40,7 +40,7 @@ function ForgetEmail() {
                 });
 
                 if (!response.ok) throw new Error('User not found');
-                
+
                 const data = await response.json();
 
                 if (data.message == 'Server Error') throw new Error('User not found');
@@ -84,9 +84,8 @@ function ForgetEmail() {
                                 id="phone"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
-                                className={`w-full p-2 border rounded-md ${
-                                    errors.phone ? "border-red-500" : "border-gray-300"
-                                }`}
+                                className={`w-full p-2 border rounded-md ${errors.phone ? "border-red-500" : "border-gray-300"
+                                    }`}
                             />
                             {errors.phone && (
                                 <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
@@ -95,9 +94,8 @@ function ForgetEmail() {
 
                         <button
                             type="submit"
-                            className={`w-full py-2 rounded-md text-white ${
-                                isSubmitting ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-600"
-                            }`}
+                            className={`w-full py-2 rounded-md text-white ${isSubmitting ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-600"
+                                }`}
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? "Submitting..." : "Find Email"}

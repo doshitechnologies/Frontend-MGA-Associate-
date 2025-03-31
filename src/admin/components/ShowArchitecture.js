@@ -18,7 +18,7 @@ const ShowArchitecture = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://projectassociate-fld7.onrender.com/api/architecture/data/${projectId}`
+        `${process.env.REACT_APP_BACKEND_URL}/architecture/data/${projectId}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch project data");
@@ -53,7 +53,7 @@ const ShowArchitecture = () => {
   const handleUpdate = async () => {
     try {
       const response = await fetch(
-        `https://projectassociate-fld7.onrender.com/api/architecture/update/${editingProject._id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/architecture/update/${editingProject._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -123,7 +123,7 @@ const ShowArchitecture = () => {
       }
 
       const response = await fetch(
-        `https://projectassociate-fld7.onrender.com/api/auth/file/${encodeURIComponent(toDeleteSection)}`,
+        `${process.env.REACT_APP_BACKEND_URL}/auth/file/${encodeURIComponent(toDeleteSection)}`,
         {
           method: 'DELETE',
           headers: {
@@ -165,7 +165,7 @@ const ShowArchitecture = () => {
       formData.append("file", file);
 
       const { data } = await axios.post(
-        "https://projectassociate-fld7.onrender.com/api/auth/upload",
+        `${process.env.REACT_APP_BACKEND_URL}/auth/upload`,
         formData
       );
 
@@ -385,7 +385,9 @@ const ShowArchitecture = () => {
         expandedSections[sectionName] && (
           <div className="mt-2 ml-4">
             {fields.map((field) => (
-              renderFileInputs(field)
+              <div key={field}>
+                {renderFileInputs(field)}
+              </div>
             ))}
           </div>
         )}

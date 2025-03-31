@@ -64,8 +64,8 @@ const SignupForm = () => {
         const data = await response.json();
         if (data.message == "Email already registered") {
           alert("Email already registered")
-        } 
-        else if (data.message == "Phone already registered"){
+        }
+        else if (data.message == "Phone already registered") {
           alert("Phone Number already registered")
         }
         else {

@@ -10,14 +10,14 @@ const ViewArchitecturalProject = () => {
   const [projectsPerPage] = useState(9);
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
-  const API_URL = `https://projectassociate-fld7.onrender.com/api/architecture/data`;
+  const API_URL = `${process.env.REACT_APP_BACKEND_URL}/architecture/data`;
 
   useEffect(() => {
     const fetchProjects = async () => {
       setLoading(true);
-      setError(null); // Reset error state before fetching
+      setError(null);
       try {
-        const response = await fetch(`https://projectassociate-fld7.onrender.com/api/architecture/data`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/architecture/data`);
         if (!response.ok) {
           throw new Error('Failed to fetch projects');
         }

@@ -18,7 +18,7 @@ const ShowInteriorProject = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://projectassociate-fld7.onrender.com/api/interior/interior/${projectId}`
+        `${process.env.REACT_APP_BACKEND_URL}/interior/interior/${projectId}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch project data");
@@ -28,9 +28,8 @@ const ShowInteriorProject = () => {
         setLoading(true);
       }
       setProjectData(data.data);
-      setEditingProject(data.data); // Initialize editing project data
+      setEditingProject(data.data);
       setLoading(false);
-      console.log(data);
     } catch (error) {
       console.error("Error fetching project data:", error);
       toast.error("Failed to fetch project data. Please try again.");
@@ -54,7 +53,7 @@ const ShowInteriorProject = () => {
   const handleUpdate = async () => {
     try {
       const response = await fetch(
-        `https://projectassociate-fld7.onrender.com/api/interior/update/interiors/${editingProject._id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/interior/update/interiors/${editingProject._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -124,7 +123,7 @@ const ShowInteriorProject = () => {
       }
 
       const response = await fetch(
-        `https://projectassociate-fld7.onrender.com/api/auth/file/${encodeURIComponent(toDeleteSection)}`,
+        `${process.env.REACT_APP_BACKEND_URL}/auth/file/${encodeURIComponent(toDeleteSection)}`,
         {
           method: 'DELETE',
           headers: {
@@ -166,7 +165,7 @@ const ShowInteriorProject = () => {
       formData.append("file", file);
 
       const { data } = await axios.post(
-        `https://projectassociate-fld7.onrender.com/api/auth/upload`,
+        `${process.env.REACT_APP_BACKEND_URL}/auth/upload`,
         formData
       );
 
@@ -277,7 +276,22 @@ const ShowInteriorProject = () => {
               </thead>
               <tbody>
                 {fields.map((field) => (
-                  renderFileInputs(field, field)
+                  <tr key={field} className="text-gray-800">
+                    <td className="border border-gray-300 px-4 py-2 font-bold">{myMap.get(field)}</td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {editing ? (
+                        <input
+                          type="text"
+                          name={field}
+                          value={editingProject[field] || ""}
+                          onChange={handleChange}
+                          className="border p-2 rounded w-full"
+                        />
+                      ) : (
+                        <p>{projectData[field]}</p>
+                      )}
+                    </td>
+                  </tr>
                 ))}
               </tbody>
             </table>
@@ -286,7 +300,9 @@ const ShowInteriorProject = () => {
         expandedSections[sectionName] && (
           <div className="mt-2 ml-4">
             {fields.map((field) => (
-              renderFileInputs(field)
+              <div key={field}>
+                {renderFileInputs(field)}
+              </div>
             ))}
           </div>
         )}
@@ -302,16 +318,16 @@ const ShowInteriorProject = () => {
           onChange={(e) => uploadFileHandler(e, sectionName)}
           className="text-blue-500 text-sm mb-4"
         />
-      )
-      }
+      )}
       {uploadingSection === sectionName && (
         <p className="text-blue-600 font-medium">Uploading...</p>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {(projectData[sectionName] || []).length > 0 ? (
-          (projectData[sectionName] || []).map((fileUrl, index) => {
+        {projectData && projectData[sectionName] && projectData[sectionName].length > 0 ? (
+          projectData[sectionName].map((fileUrl, index) => {
             const fileName = fileUrl.split("/").pop().split("?")[0];
+
 
             return (
               <div key={index} className="relative group">
@@ -323,12 +339,20 @@ const ShowInteriorProject = () => {
                       height="200px"
                       className="border rounded-md pointer-events-none"
                       title={`File ${index + 1}`}
+                      onError={(e) => {
+                        e.target.onerror = null; // Prevent infinite loop
+                        e.target.src = "../../../public/imageNotFound.jpg";
+                      }}
                     ></iframe>
                   ) : (
                     <img
                       src={fileUrl}
                       alt={`File ${index + 1}`}
                       className="w-full h-60 object-cover rounded-lg"
+                      onError={(e) => {
+                        e.target.onerror = null; // Prevent infinite loop
+                        e.target.src = "/fallback-image.png"; // Replace with your fallback image
+                      }}
                     />
                   )}
                 </a>

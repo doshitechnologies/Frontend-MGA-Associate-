@@ -18,7 +18,7 @@ const ShowInteriorProject = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://projectassociate-fld7.onrender.com/api/interior/interior/${projectId}`
+        `${process.env.REACT_APP_BACKEND_URL}/interior/interior/${projectId}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch project data");
@@ -54,7 +54,7 @@ const ShowInteriorProject = () => {
   const handleUpdate = async () => {
     try {
       const response = await fetch(
-        `https://projectassociate-fld7.onrender.com/api/interior/update/interiors/${editingProject._id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/interior/update/interiors/${editingProject._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -255,7 +255,9 @@ const ShowInteriorProject = () => {
         expandedSections[sectionName] && (
           <div className="mt-2 ml-4">
             {fields.map((field) => (
-              renderFileInputs(field)
+              <div key={field}>
+                {renderFileInputs(field)}
+              </div>
             ))}
           </div>
         )}
@@ -264,7 +266,7 @@ const ShowInteriorProject = () => {
 
   const renderFileInputs = (sectionName, label) => (
     <div>
-      <h3 className="font-bold mb-2 text-2xl">{myMap.get(label)}</h3>
+      <h3 className="font-bold mb-2 text-2xl">{myMap.get(sectionName)}</h3>
       {editing && (
         <input
           type="file"

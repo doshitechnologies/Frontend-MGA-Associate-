@@ -87,7 +87,7 @@ const AddArchitectureProject = ({ isActive, onClick }) => {
           formDataToUpload.append("file", file);
 
           const { data } = await axios.post(
-            `https://projectassociate-fld7.onrender.com/api/auth/uploadarchitecture`,
+            `${process.env.REACT_APP_BACKEND_URL}/auth/uploadarchitecture`,
             formDataToUpload
           );
 
@@ -135,7 +135,7 @@ const AddArchitectureProject = ({ isActive, onClick }) => {
 
     try {
       await axios.post(
-        `https://projectassociate-fld7.onrender.com/api/architecture/upload`,
+        `${process.env.REACT_APP_BACKEND_URL}/architecture/upload`,
         transformedObject
       );
       toast.success("Architecture project added successfully!");
@@ -295,7 +295,7 @@ const AddArchitectureProject = ({ isActive, onClick }) => {
                 e.stopPropagation();
                 try {
                   await axios.delete(
-                    `https://projectassociate-fld7.onrender.com/api/auth/filearchitecture/${encodeURIComponent(
+                    `${process.env.REACT_APP_BACKEND_URL}/auth/filearchitecture/${encodeURIComponent(
                       fileUrl
                     )}`
                   );
@@ -369,7 +369,9 @@ const AddArchitectureProject = ({ isActive, onClick }) => {
             <h2 className="text-lg font-bold text-gray-800 mb-4">{group.heading}</h2>
             <div className="grid md:grid-cols-2 gap-6">
               {group.sections.map((sectionKey) =>
-                renderFileInputs(sectionKey)
+                <div key={sectionKey}>
+                  {renderFileInputs(sectionKey, sectionKey.replace(/_/g, " "))}
+                </div>
               )}
             </div>
           </div>

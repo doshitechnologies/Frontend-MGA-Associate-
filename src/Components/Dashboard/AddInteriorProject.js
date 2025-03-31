@@ -17,28 +17,50 @@ const AddInteriorProject = ({ isActive, onClick }) => {
     email: "",
     documentSections: {
       Presentation_DrawingI: [],
-      Ceiling: [],
-      Electrical: [],
+      Ceiling_Shop: [],
+      Ceiling_Ground: [],
+      Ceiling_First: [],
+      Ceiling_Second: [],
+      Ceiling_Third: [],
+      Ceiling_Fourth: [],
+      Ceiling_Fifth: [],
+      Electrical_Shop: [],
+      Electrical_Ground: [],
+      Electrical_First: [],
+      Electrical_Second: [],
+      Electrical_Third: [],
+      Electrical_Fourth: [],
+      Electrical_Fifth: [],
+      Furniture_Shop: [],
+      Furniture_Ground: [],
+      Furniture_First: [],
+      Furniture_Second: [],
+      Furniture_Third: [],
+      Furniture_Fourth: [],
+      Furniture_Fifth: [],
+      Plumbing_Shop: [],
+      Plumbing_Ground: [],
+      Plumbing_First: [],
+      Plumbing_Second: [],
+      Plumbing_Third: [],
+      Plumbing_Fourth: [],
+      Plumbing_Fifth: [],
+      ThreeD_Model: [],
+      Flooring_Shop: [],
+      Flooring_Ground: [],
+      Flooring_First: [],
+      Flooring_Second: [],
+      Flooring_Third: [],
+      Flooring_Fourth: [],
+      Flooring_Fifth: [],
       Door_Handle: [],
       Curtains: [],
-      Furniture: [],
       Laminates: [],
       Venner: [],
       Hinges: [],
-      Plumbing: [],
-      ThreeD_Model: [],
-      Flooring: [],
       Estimate: [],
       Bill: [],
       Site_Photo: [],
-      Ceiling_Shop: [],
-      Ground: [],
-      First: [],
-      Second: [],
-      Third: [],
-      Fourth: [],
-      Fifth: [],
-      Sixth: [],
     },
   });
 
@@ -81,7 +103,7 @@ const AddInteriorProject = ({ isActive, onClick }) => {
           formDataToUpload.append("file", file);
 
           const { data } = await axios.post(
-            `https://projectassociate-fld7.onrender.com/api/auth/upload`,
+            `${process.env.REACT_APP_BACKEND_URL}/auth/upload`,
             formDataToUpload
           );
 
@@ -130,7 +152,7 @@ const AddInteriorProject = ({ isActive, onClick }) => {
 
     try {
       await axios.post(
-        `https://projectassociate-fld7.onrender.com/api/interior/interiors`,
+        `${process.env.REACT_APP_BACKEND_URL}/interior/interiors`,
         transformedObject
       );
       toast.success("Interior project added successfully!");
@@ -149,28 +171,50 @@ const AddInteriorProject = ({ isActive, onClick }) => {
         email: "",
         documentSections: {
           Presentation_DrawingI: [],
-          Ceiling: [],
-          Electrical: [],
+          Ceiling_Shop: [],
+          Ceiling_Ground: [],
+          Ceiling_First: [],
+          Ceiling_Second: [],
+          Ceiling_Third: [],
+          Ceiling_Fourth: [],
+          Ceiling_Fifth: [],
+          Electrical_Shop: [],
+          Electrical_Ground: [],
+          Electrical_First: [],
+          Electrical_Second: [],
+          Electrical_Third: [],
+          Electrical_Fourth: [],
+          Electrical_Fifth: [],
+          Furniture_Shop: [],
+          Furniture_Ground: [],
+          Furniture_First: [],
+          Furniture_Second: [],
+          Furniture_Third: [],
+          Furniture_Fourth: [],
+          Furniture_Fifth: [],
+          Plumbing_Shop: [],
+          Plumbing_Ground: [],
+          Plumbing_First: [],
+          Plumbing_Second: [],
+          Plumbing_Third: [],
+          Plumbing_Fourth: [],
+          Plumbing_Fifth: [],
+          ThreeD_Model: [],
+          Flooring_Shop: [],
+          Flooring_Ground: [],
+          Flooring_First: [],
+          Flooring_Second: [],
+          Flooring_Third: [],
+          Flooring_Fourth: [],
+          Flooring_Fifth: [],
           Door_Handle: [],
           Curtains: [],
-          Furniture: [],
           Laminates: [],
           Venner: [],
           Hinges: [],
-          Plumbing: [],
-          ThreeD_Model: [],
-          Flooring: [],
           Estimate: [],
           Bill: [],
           Site_Photo: [],
-          Shop: [],
-          Ground: [],
-          First: [],
-          Second: [],
-          Third: [],
-          Fourth: [],
-          Fifth: [],
-          Sixth: [],
         },
       });
     } catch (error) {
@@ -202,7 +246,6 @@ const AddInteriorProject = ({ isActive, onClick }) => {
   );
 
   const renderFileInputs = (sectionName, label) => {
-
     const formatLabel = (label) => {
       const newLabel = label.replace(/_/g, " ");
       const words = newLabel.split(" ");
@@ -216,7 +259,6 @@ const AddInteriorProject = ({ isActive, onClick }) => {
 
       return newLabel;
     };
-
 
     return (
       <div className="p-4 bg-blue-100 rounded-lg shadow-md">
@@ -261,7 +303,7 @@ const AddInteriorProject = ({ isActive, onClick }) => {
                   e.stopPropagation();
                   try {
                     await axios.delete(
-                      `https://projectassociate-fld7.onrender.com/api/auth/file/${encodeURIComponent(fileUrl)}`
+                      `${process.env.REACT_APP_BACKEND_URL}/auth/file/${encodeURIComponent(fileUrl)}`
                     );
                     setFormData((prevFormData) => {
                       const updatedFiles = [...prevFormData.documentSections[sectionName]];
@@ -288,7 +330,7 @@ const AddInteriorProject = ({ isActive, onClick }) => {
           ))}
         </ul>
       </div>
-    )
+    );
   };
 
   const documentGroups = [
@@ -335,7 +377,9 @@ const AddInteriorProject = ({ isActive, onClick }) => {
             <h2 className="text-lg font-bold text-gray-800 mb-4">{group.heading}</h2>
             <div className="grid md:grid-cols-2 gap-6">
               {group.sections.map((sectionKey) =>
-                renderFileInputs(sectionKey, sectionKey.replace(/_/g, " "))
+                <div key={sectionKey}>
+                  {renderFileInputs(sectionKey, sectionKey.replace(/_/g, " "))}
+                </div>
               )}
             </div>
           </div>

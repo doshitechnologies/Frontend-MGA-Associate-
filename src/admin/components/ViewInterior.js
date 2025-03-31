@@ -10,11 +10,11 @@ const ViewInteriorProject = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  const API_URL = `https://projectassociate-fld7.onrender.com/api/interior`;
+  const API_URL = `${process.env.REACT_APP_BACKEND_URL}/interior`;
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [API_URL]);
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -22,7 +22,6 @@ const ViewInteriorProject = () => {
       const response = await fetch(API_URL);
       if (!response.ok) throw new Error('Failed to fetch projects');
       const data = await response.json();
-      console.log(data);
       setProjectData(Array.isArray(data.data) ? data.data : []);
     } catch (err) {
       setError(err.message);
@@ -36,7 +35,7 @@ const ViewInteriorProject = () => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`https://projectassociate-fld7.onrender.com/api/interior/interiors/${projectId}`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/interior/interiors/${projectId}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to delete project');

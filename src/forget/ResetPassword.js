@@ -75,9 +75,8 @@ function ResetPassword() {
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className={`w-full p-2 border rounded-md ${
-                errors.newPassword ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`w-full p-2 border rounded-md ${errors.newPassword ? "border-red-500" : "border-gray-300"
+                }`}
             />
             {errors.newPassword && (
               <p className="text-red-500 text-sm">{errors.newPassword}</p>
@@ -91,9 +90,8 @@ function ResetPassword() {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className={`w-full p-2 border rounded-md ${
-                errors.confirmPassword ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`w-full p-2 border rounded-md ${errors.confirmPassword ? "border-red-500" : "border-gray-300"
+                }`}
             />
             {errors.confirmPassword && (
               <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
@@ -102,9 +100,8 @@ function ResetPassword() {
           {errors.api && <p className="text-red-500 text-sm mb-4">{errors.api}</p>}
           <button
             type="submit"
-            className={`w-full py-2 rounded-md text-white ${
-              isSubmitting ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-600"
-            }`}
+            className={`w-full py-2 rounded-md text-white ${isSubmitting ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-600"
+              }`}
             disabled={isSubmitting}
           >
             {isSubmitting ? "Submitting..." : "Reset Password"}

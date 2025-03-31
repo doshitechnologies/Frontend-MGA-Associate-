@@ -10,7 +10,7 @@ const ViewInteriorProject = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  const API_URL = `https://projectassociate-fld7.onrender.com/api/interior`;
+  const API_URL = `${process.env.REACT_APP_BACKEND_URL}/interior`;
 
   useEffect(() => {
     fetchProjects();
@@ -19,10 +19,9 @@ const ViewInteriorProject = () => {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`https://projectassociate-fld7.onrender.com/api/interior`);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/interior`);
       if (!response.ok) throw new Error('Failed to fetch projects');
       const data = await response.json();
-      console.log(data)
       setProjectData(Array.isArray(data.data) ? data.data : []);
     } catch (err) {
       setError(err.message);

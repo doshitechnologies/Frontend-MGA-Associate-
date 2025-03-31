@@ -7,7 +7,7 @@ const LoginForm = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -85,9 +85,8 @@ const LoginForm = () => {
               id="email"
               value={formData.email}
               onChange={handleChange}
-              className={`w-full p-2 border rounded-md ${
-                errors.email ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full p-2 border rounded-md ${errors.email ? 'border-red-500' : 'border-gray-300'
+                }`}
             />
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
@@ -103,9 +102,8 @@ const LoginForm = () => {
                 id="password"
                 value={formData.password}
                 onChange={handleChange}
-                className={`w-full p-2 border rounded-md ${
-                  errors.password ? 'border-red-500' : 'border-gray-300'
-                }`}
+                className={`w-full p-2 border rounded-md ${errors.password ? 'border-red-500' : 'border-gray-300'
+                  }`}
               />
               <button
                 type="button"
@@ -121,9 +119,8 @@ const LoginForm = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full py-2 rounded-md text-white ${
-              isSubmitting ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-600'
-            }`}
+            className={`w-full py-2 rounded-md text-white ${isSubmitting ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-600'
+              }`}
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Submitting...' : 'Login'}

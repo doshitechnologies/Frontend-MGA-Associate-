@@ -49,11 +49,6 @@ const Dashboard = () => {
         return <div>Select an option from the sidebar.</div>;
     }
   };
-  if (!isLoggedIn) {
-    // Navigate to the home page if the user is not logged in
-    navigate("/");
-    return null; // Avoid rendering the JSX below if navigating away
-  }
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">

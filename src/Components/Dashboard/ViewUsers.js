@@ -76,7 +76,6 @@ const ViewUsers = () => {
   const handleDelete = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        console.log("Attempting to delete user with ID:", userId); // Log to verify correct ID
         const response = await fetch(`https://projectassociate-fld7.onrender.com/api/auth/users/${userId}`, {
           method: 'DELETE',
           headers: {

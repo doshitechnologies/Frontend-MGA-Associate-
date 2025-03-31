@@ -18,7 +18,7 @@ const ShowArchitecture = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://projectassociate-fld7.onrender.com/api/architecture/data/${projectId}`
+        `${process.env.REACT_APP_BACKEND_URL}/architecture/data/${projectId}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch project data");
@@ -315,7 +315,9 @@ const ShowArchitecture = () => {
         expandedSections[sectionName] && (
           <div className="mt-2 ml-4">
             {fields.map((field) => (
-              renderFileInputs(field)
+              <div key={field}>
+                {renderFileInputs(field)}
+              </div>
             ))}
           </div>
         )}
