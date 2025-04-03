@@ -1,9 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { saveAs } from "file-saver";
+import * as pdfjsLib from "pdfjs-dist";
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min";
+
+
+// import ImageNotFound from "../../imageNotFound.jpg";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 const ShowInteriorProject = () => {
   const { projectId } = useParams();
@@ -13,6 +20,29 @@ const ShowInteriorProject = () => {
   const [editingProject, setEditingProject] = useState({});
   const [expandedSections, setExpandedSections] = useState({});
   const [uploadingSection, setUploadingSection] = useState(null);
+
+  const pdfCanvasRef = useRef(null);
+  const [pdfUrlToView, setPdfUrlToView] = useState(null);
+
+
+  const viewPdfInCanvas = async (pdfUrl) => {
+    setPdfUrlToView(pdfUrl);
+    try {
+      const loadingTask = pdfjsLib.getDocument(pdfUrl);
+      const pdf = await loadingTask.promise;
+      const page = await pdf.getPage(1); // Render the first page
+      const viewport = page.getViewport({ scale: 1.5 });
+      const canvas = pdfCanvasRef.current;
+      const context = canvas.getContext("2d");
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      await page.render({ canvasContext: context, viewport: viewport }).promise;
+    } catch (error) {
+      console.error("Error rendering PDF:", error);
+      toast.error("Failed to render PDF.");
+    }
+  };
+
 
   const fetchProjectData = async () => {
     setLoading(true);
@@ -288,20 +318,29 @@ const ShowInteriorProject = () => {
               <div key={index} className="relative group">
                 <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="block">
                   {fileUrl.endsWith(".pdf") ? (
-                    <iframe
-                      src={fileUrl}
-                      width="100%"
-                      height="200px"
-                      className="border rounded-md pointer-events-none"
-                      title={`File ${index + 1}`}
-                    ></iframe>
+                    <>
+                      <button
+                        onClick={() => viewPdfInCanvas(fileUrl)}
+                        className="block w-full h-10 border rounded-md"
+                      >
+                        View PDF
+                      </button>
+                      {pdfUrlToView === fileUrl && (
+                        <canvas ref={pdfCanvasRef} className="w-full h-60 border rounded-md" />
+                      )}
+                    </>
                   ) : (
                     <img
                       src={fileUrl}
                       alt={`File ${index + 1}`}
                       className="w-full h-60 object-cover rounded-lg"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "../../imageNotFound.jpg";
+                      }}
                     />
                   )}
+
                 </a>
                 <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <button
