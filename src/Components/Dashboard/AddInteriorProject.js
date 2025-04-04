@@ -303,7 +303,7 @@ const AddInteriorProject = ({ isActive, onClick }) => {
                   e.stopPropagation();
                   try {
                     await axios.delete(
-                      `${process.env.REACT_APP_BACKEND_URL}/auth/file/${encodeURIComponent(fileUrl)}`
+                      `http://localhost:8000/api/auth/file/${encodeURIComponent(fileUrl)}`
                     );
                     setFormData((prevFormData) => {
                       const updatedFiles = [...prevFormData.documentSections[sectionName]];

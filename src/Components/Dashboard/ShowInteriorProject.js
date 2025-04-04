@@ -1,16 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { saveAs } from "file-saver";
-import * as pdfjsLib from "pdfjs-dist";
-import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min";
+import { useMediaQuery } from 'react-responsive';
 
 
 // import ImageNotFound from "../../imageNotFound.jpg";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+import PdfModal from "./PdfModal"; // Import the PdfModal component
+
+
 
 const ShowInteriorProject = () => {
   const { projectId } = useParams();
@@ -21,26 +22,18 @@ const ShowInteriorProject = () => {
   const [expandedSections, setExpandedSections] = useState({});
   const [uploadingSection, setUploadingSection] = useState(null);
 
-  const pdfCanvasRef = useRef(null);
-  const [pdfUrlToView, setPdfUrlToView] = useState(null);
+  const [pdfModalUrl, setPdfModalUrl] = useState(null);
+
+  const isMobile = useMediaQuery({ maxWidth: 767 }); // Adjust breakpoint as needed
 
 
-  const viewPdfInCanvas = async (pdfUrl) => {
-    setPdfUrlToView(pdfUrl);
-    try {
-      const loadingTask = pdfjsLib.getDocument(pdfUrl);
-      const pdf = await loadingTask.promise;
-      const page = await pdf.getPage(1); // Render the first page
-      const viewport = page.getViewport({ scale: 1.5 });
-      const canvas = pdfCanvasRef.current;
-      const context = canvas.getContext("2d");
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-      await page.render({ canvasContext: context, viewport: viewport }).promise;
-    } catch (error) {
-      console.error("Error rendering PDF:", error);
-      toast.error("Failed to render PDF.");
-    }
+
+  const viewPdfInModal = (pdfUrl) => {
+    setPdfModalUrl(pdfUrl);
+  };
+
+  const closePdfModal = () => {
+    setPdfModalUrl(null);
   };
 
 
@@ -128,14 +121,50 @@ const ShowInteriorProject = () => {
 
 
   const handleDownloadImage = async (fileUrl, fileName) => {
-    try {
-      const response = await fetch(fileUrl);
-      const blob = await response.blob();
-      saveAs(blob, fileName);
-    } catch (error) {
-      console.error("Error downloading the file:", error);
-    }
-  }
+    const timeout = 5000; // 5 seconds timeout
+    let timeoutId;
+
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error("Download taking too long."));
+        }, timeout);
+
+        try {
+          const response = await fetch(fileUrl);
+          const blob = await response.blob();
+          clearTimeout(timeoutId); // Clear timeout if download is successful
+          saveAs(blob, fileName);
+          resolve();
+        } catch (error) {
+          clearTimeout(timeoutId); // Clear timeout on fetch error as well
+          reject(error);
+        }
+      }),
+      {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+        pending: "Downloading...",
+        success: "Download complete!",
+        error: {
+          render({ data }) {
+            if (data && data.message === "Download taking too long.") {
+              return "File is taking too long to download. Please try again later.";
+            }
+            return "Download failed. Please try again.";
+          },
+        },
+        finally: () => clearTimeout(timeoutId), // Ensure timeout is cleared on completion/error
+      }
+    );
+  };
 
   const uploadFileHandler = async (e, sectionName) => {
     const file = e.target.files[0];
@@ -308,28 +337,60 @@ const ShowInteriorProject = () => {
       {uploadingSection === sectionName && (
         <p className="text-blue-600 font-medium">Uploading...</p>
       )}
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {(projectData[sectionName] || []).length > 0 ? (
           (projectData[sectionName] || []).map((fileUrl, index) => {
             const fileName = fileUrl.split("/").pop().split("?")[0];
 
             return (
-              <div key={index} className="relative group">
-                <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="block">
-                  {fileUrl.endsWith(".pdf") ? (
-                    <>
-                      <button
-                        onClick={() => viewPdfInCanvas(fileUrl)}
-                        className="block w-full h-10 border rounded-md"
+              <div key={index} className="relative group" style={{ width: '100%', maxWidth: '300px' }}>
+                {fileUrl.endsWith(".pdf") ? (
+                  <>
+                    {isMobile ? (
+                      <div
+                        className="cursor-pointer"
+                        onClick={() => viewPdfInModal(fileUrl)}
                       >
-                        View PDF
-                      </button>
-                      {pdfUrlToView === fileUrl && (
-                        <canvas ref={pdfCanvasRef} className="w-full h-60 border rounded-md" />
-                      )}
-                    </>
-                  ) : (
+                        <iframe
+                          src={fileUrl}
+                          width="100%"
+                          height="200px"
+                          className="border rounded-md pointer-events-none"
+                          title={`File ${index + 1}`}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "../../imageNotFound.jpg";
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <a
+                        href={fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block"
+                      >
+                        <iframe
+                          src={fileUrl}
+                          width="100%"
+                          height="200px"
+                          className="border rounded-md pointer-events-none"
+                          title={`File ${index + 1}`}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "../../imageNotFound.jpg";
+                          }}
+                        />
+                      </a>
+                    )}
+                  </>
+                ) : (
+                  <a
+                    href={fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
                     <img
                       src={fileUrl}
                       alt={`File ${index + 1}`}
@@ -339,10 +400,11 @@ const ShowInteriorProject = () => {
                         e.target.src = "../../imageNotFound.jpg";
                       }}
                     />
-                  )}
+                  </a>
+                )}
 
-                </a>
-                <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+
+                {isMobile ? <div className="absolute top-2 right-2 flex space-x-2 transition-opacity duration-300">
                   <button
                     onClick={() => handleDownloadImage(fileUrl, fileName)}
                     className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
@@ -383,7 +445,49 @@ const ShowInteriorProject = () => {
                       <line x1="12" y1="2" x2="12" y2="15"></line>
                     </svg>
                   </button>
-                </div>
+                </div> :
+                  <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <button
+                      onClick={() => handleDownloadImage(fileUrl, fileName)}
+                      className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
+                      title="Download File"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M20 16v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="8 12 12 16 16 12"></polyline>
+                        <line x1="12" y1="16" x2="12" y2="4"></line>
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleShareImage(fileUrl)}
+                      className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
+                      title="Share File"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                        <polyline points="16 6 12 2 8 6"></polyline>
+                        <line x1="12" y1="2" x2="12" y2="15"></line>
+                      </svg>
+                    </button>
+                  </div>}
                 <p className="text-center mt-2">{decodeURIComponent(fileName)}</p>
               </div>
             );
@@ -397,6 +501,8 @@ const ShowInteriorProject = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-10">
+      {/* ... (rest of your component rendering) */}
+      {pdfModalUrl && isMobile && <PdfModal pdfUrl={pdfModalUrl} onClose={closePdfModal} />}
       <div className="flex justify-end">
         <button
           onClick={() => window.history.back()} // Navigate back in history
