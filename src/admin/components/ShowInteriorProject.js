@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { saveAs } from "file-saver";
+import { useMediaQuery } from 'react-responsive';
+
+
+import PdfModal from "../../Components/Dashboard/PdfModal";
 
 const ShowInteriorProject = () => {
   const { projectId } = useParams();
@@ -13,6 +17,19 @@ const ShowInteriorProject = () => {
   const [editingProject, setEditingProject] = useState({});
   const [expandedSections, setExpandedSections] = useState({});
   const [uploadingSection, setUploadingSection] = useState(null);
+
+  const [pdfModalUrl, setPdfModalUrl] = useState(null);
+  const isMobile = useMediaQuery({ maxWidth: 767 });
+
+
+  const viewPdfInModal = (pdfUrl) => {
+    setPdfModalUrl(pdfUrl);
+  };
+
+  const closePdfModal = () => {
+    setPdfModalUrl(null);
+  };
+
 
   const fetchProjectData = async () => {
     setLoading(true);
@@ -330,33 +347,68 @@ const ShowInteriorProject = () => {
 
 
             return (
-              <div key={index} className="relative group">
-                <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="block">
-                  {fileUrl.endsWith(".pdf") ? (
-                    <iframe
-                      src={fileUrl}
-                      width="100%"
-                      height="200px"
-                      className="border rounded-md pointer-events-none"
-                      title={`File ${index + 1}`}
-                      onError={(e) => {
-                        e.target.onerror = null; // Prevent infinite loop
-                        e.target.src = "../../../public/imageNotFound.jpg";
-                      }}
-                    ></iframe>
-                  ) : (
+              <div key={index} className="relative group" style={{ width: '100%', maxWidth: '300px' }}>
+                {fileUrl.endsWith(".pdf") ? (
+                  <>
+                    {isMobile ? (
+                      <div
+                        className="cursor-pointer"
+                        onClick={() => viewPdfInModal(fileUrl)}
+                      >
+                        <iframe
+                          src={fileUrl}
+                          width="100%"
+                          height="200px"
+                          className="border rounded-md pointer-events-none"
+                          title={`File ${index + 1}`}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "../../imageNotFound.jpg";
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <a
+                        href={fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block"
+                      >
+                        <iframe
+                          src={fileUrl}
+                          width="100%"
+                          height="200px"
+                          className="border rounded-md pointer-events-none"
+                          title={`File ${index + 1}`}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "../../imageNotFound.jpg";
+                          }}
+                        />
+                      </a>
+                    )}
+                  </>
+                ) : (
+                  <a
+                    href={fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
                     <img
                       src={fileUrl}
                       alt={`File ${index + 1}`}
                       className="w-full h-60 object-cover rounded-lg"
                       onError={(e) => {
-                        e.target.onerror = null; // Prevent infinite loop
-                        e.target.src = "/fallback-image.png"; // Replace with your fallback image
+                        e.target.onerror = null;
+                        e.target.src = "../../imageNotFound.jpg";
                       }}
                     />
-                  )}
-                </a>
-                <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  </a>
+                )}
+
+
+                {isMobile ? <div className="absolute top-2 right-2 flex space-x-2 transition-opacity duration-300">
                   <button
                     onClick={() => handleDownloadImage(fileUrl, fileName)}
                     className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
@@ -397,11 +449,12 @@ const ShowInteriorProject = () => {
                       <line x1="12" y1="2" x2="12" y2="15"></line>
                     </svg>
                   </button>
-                  {editing && (
+                </div> :
+                  <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <button
-                      onClick={() => handleRemoveImage(sectionName, index)}
-                      className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 shadow-md"
-                      title="Remove File"
+                      onClick={() => handleDownloadImage(fileUrl, fileName)}
+                      className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
+                      title="Download File"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -413,13 +466,32 @@ const ShowInteriorProject = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
-                        <path d="M6 2L18 2L18 20L6 20L6 2Z"></path>
-                        <path d="M9 2V20"></path>
-                        <path d="M15 2V20"></path>
+                        <path d="M20 16v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="8 12 12 16 16 12"></polyline>
+                        <line x1="12" y1="16" x2="12" y2="4"></line>
                       </svg>
                     </button>
-                  )}
-                </div>
+                    <button
+                      onClick={() => handleShareImage(fileUrl)}
+                      className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
+                      title="Share File"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                        <polyline points="16 6 12 2 8 6"></polyline>
+                        <line x1="12" y1="2" x2="12" y2="15"></line>
+                      </svg>
+                    </button>
+                  </div>}
                 <p className="text-center mt-2">{decodeURIComponent(fileName)}</p>
               </div>
             );
@@ -433,6 +505,8 @@ const ShowInteriorProject = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-10">
+      {/* ... (rest of your component rendering) */}
+      {pdfModalUrl && isMobile && <PdfModal pdfUrl={pdfModalUrl} onClose={closePdfModal} />}
       <div className="flex justify-end">
         <button
           onClick={() => window.history.back()} // Navigate back in history

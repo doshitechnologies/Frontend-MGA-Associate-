@@ -1,80 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Bounce, toast } from 'react-toastify';
 
 const PdfModal = ({ pdfUrl, onClose }) => {
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const googleDocsViewerUrl = `https://docs.google.com/viewerng/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
 
     useEffect(() => {
-        let timeoutId;
-
-        timeoutId = setTimeout(() => {
-            if (loading) {
-                setLoading(false);
-                toast.info('🦄 File Not Loaded!', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
-                onClose();
-            }
-        }, 3000);
-
-        return () => clearTimeout(timeoutId);
-    }, [pdfUrl, onClose]);
-
-    useEffect(() => {
-        if (pdfUrl) {
-            setLoading(true);
-            const loadSimulationTimeout = setTimeout(() => {
-                setLoading(false);
-            }, 500);
-            return () => clearTimeout(loadSimulationTimeout);
-        }
+        setLoading(true);
+        const loadTimeout = setTimeout(() => {
+            setLoading(false);
+        }, 1500); // Adjust the timeout as needed
+        return () => clearTimeout(loadTimeout);
     }, [pdfUrl]);
 
     return (
-        <div
-            style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                backgroundColor: "rgba(0, 0, 0, 0.8)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 1000,
-            }}
-        >
-            <div
-                style={{
-                    backgroundColor: "white",
-                    padding: "0px",
-                    width: "100%",
-                    height: "100%",
-                    overflow: "auto",
-                    position: "relative",
-                }}
-            >
-                <button
-                    onClick={onClose}
-                    style={{
-                        position: "absolute",
-                        top: "10px",
-                        right: "10px",
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        padding: "5px",
-                    }}
-                >
+        <div style={fullScreenOverlayStyle}>
+            <div style={fullScreenContentStyle}>
+                <button onClick={onClose} style={fullScreenCloseButtonStyle}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-6 w-8 p-y-2 text-white bg-[#3B3B3B] cursor-pointer"
@@ -91,18 +32,91 @@ const PdfModal = ({ pdfUrl, onClose }) => {
                     </svg>
                 </button>
                 {loading ? (
-                    <div className="flex items-center justify-center h-full">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                    <div style={fullScreenLoadingContainerStyle}>
+                        <div style={spinnerStyle}></div>
                     </div>
                 ) : (
                     <iframe
-                        src={pdfUrl}
-                        style={{ width: "100%", height: "100%", border: "none" }}
+                        src={googleDocsViewerUrl}
+                        style={fullScreenIframeStyle}
+                        title="PDF Viewer"
                     />
                 )}
             </div>
         </div>
     );
 };
+
+const fullScreenOverlayStyle = {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.9)", // Slightly darker for better contrast
+    display: "flex",
+    justifyContent: "center", // Center horizontally (though not strictly needed for full screen)
+    alignItems: "center", // Center vertically (though not strictly needed for full screen)
+    zIndex: 1000,
+};
+
+const fullScreenContentStyle = {
+    backgroundColor: "white",
+    width: "100%",
+    height: "100%",
+    overflow: "hidden",
+    position: "relative",
+};
+
+const fullScreenCloseButtonStyle = {
+    position: "absolute",
+    top: "20px", 
+    left: "20px",
+    background: "rgba(0, 0, 0, 0.5)",
+    border: "none",
+    cursor: "pointer",
+    padding: "2px",
+    borderRadius: "5px",
+    zIndex: 1100,
+};
+
+const fullScreenLoadingContainerStyle = {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.9)", // Match overlay for seamless transition
+    zIndex: 1050, // Above the content but below the close button
+};
+
+const fullScreenIframeStyle = {
+    width: "100%",
+    height: "100%",
+    border: "none",
+};
+
+const spinnerStyle = {
+    border: "4px solid #f3f3f3",
+    borderTop: "4px solid #3498db",
+    borderRadius: "50%",
+    width: "60px",
+    height: "60px",
+    animation: "spin 1s linear infinite",
+};
+
+// Keyframes for spinner animation (ensure this is in your global CSS or a <style> tag)
+const spinAnimation = `@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}`;
+
+const styleSheet = document.createElement("style");
+styleSheet.type = "text/css";
+styleSheet.innerHTML = spinAnimation;
+document.head.appendChild(styleSheet);
 
 export default PdfModal;

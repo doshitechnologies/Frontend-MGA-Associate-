@@ -7,8 +7,6 @@ import { saveAs } from "file-saver";
 import { useMediaQuery } from 'react-responsive';
 
 
-// import ImageNotFound from "../../imageNotFound.jpg";
-
 import PdfModal from "./PdfModal"; // Import the PdfModal component
 
 

@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { saveAs } from "file-saver";
+
+import { useMediaQuery } from 'react-responsive';
+import PdfModal from "./PdfModal"; // Import the PdfModal component
+
 
 const ShowArchitecture = () => {
   const { projectId } = useParams();
@@ -13,6 +17,19 @@ const ShowArchitecture = () => {
   const [editingProject, setEditingProject] = useState({});
   const [expandedSections, setExpandedSections] = useState({}); // Track dropdown states
   const [uploadingSection, setUploadingSection] = useState(null);
+
+  const [pdfModalUrl, setPdfModalUrl] = useState(null);
+
+  const isMobile = useMediaQuery({ maxWidth: 767 });
+
+
+  const viewPdfInModal = (pdfUrl) => {
+    setPdfModalUrl(pdfUrl);
+  };
+
+  const closePdfModal = () => {
+    setPdfModalUrl(null);
+  };
 
   const fetchProjectData = async () => {
     setLoading(true);
@@ -28,7 +45,7 @@ const ShowArchitecture = () => {
         setLoading(true)
       }
       setProjectData(data.data);
-      setEditingProject(data.data); // Initialize editing project data
+      setEditingProject(data.data);
       setLoading(false)
     } catch (error) {
       console.error("Error fetching project data:", error);
@@ -38,7 +55,7 @@ const ShowArchitecture = () => {
     }
   };
 
-  // Call the fetchProjectData on component mount and whenever projectId changes
+
   useEffect(() => {
     if (projectId) {
       fetchProjectData(); // Call fetchProjectData globally
@@ -96,14 +113,50 @@ const ShowArchitecture = () => {
   };
 
   const handleDownloadImage = async (fileUrl, fileName) => {
-    try {
-      const response = await fetch(fileUrl);
-      const blob = await response.blob();
-      saveAs(blob, fileName);
-    } catch (error) {
-      console.error("Error downloading the file:", error);
-    }
-  }
+    const timeout = 5000; // 5 seconds timeout
+    let timeoutId;
+
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error("Download taking too long."));
+        }, timeout);
+
+        try {
+          const response = await fetch(fileUrl);
+          const blob = await response.blob();
+          clearTimeout(timeoutId); // Clear timeout if download is successful
+          saveAs(blob, fileName);
+          resolve();
+        } catch (error) {
+          clearTimeout(timeoutId); // Clear timeout on fetch error as well
+          reject(error);
+        }
+      }),
+      {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+        pending: "Downloading...",
+        success: "Download complete!",
+        error: {
+          render({ data }) {
+            if (data && data.message === "Download taking too long.") {
+              return "File is taking too long to download. Please try again later.";
+            }
+            return "Download failed. Please try again.";
+          },
+        },
+        finally: () => clearTimeout(timeoutId), // Ensure timeout is cleared on completion/error
+      }
+    );
+  };
 
   const uploadFileHandler = async (e, sectionName) => {
     const file = e.target.files[0];
@@ -156,24 +209,66 @@ const ShowArchitecture = () => {
 
             return (
               <div key={index} className="relative group">
-                <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="block">
-                  {fileUrl.endsWith(".pdf") ? (
-                    <iframe
-                      src={fileUrl}
-                      width="100%"
-                      height="200px"
-                      className="border rounded-md pointer-events-none"
-                      title={`File ${index + 1}`}
-                    ></iframe>
-                  ) : (
+
+                {fileUrl.endsWith(".pdf") ? (
+                  <>
+                    {isMobile ? (
+                      <div
+                        className="cursor-pointer"
+                        onClick={() => viewPdfInModal(fileUrl)}
+                      >
+                        <iframe
+                          src={fileUrl}
+                          width="100%"
+                          height="200px"
+                          className="border rounded-md pointer-events-none"
+                          title={`File ${index + 1}`}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "../../imageNotFound.jpg";
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <a
+                        href={fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block"
+                      >
+                        <iframe
+                          src={fileUrl}
+                          width="100%"
+                          height="200px"
+                          className="border rounded-md pointer-events-none"
+                          title={`File ${index + 1}`}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "../../imageNotFound.jpg";
+                          }}
+                        />
+                      </a>
+                    )}
+                  </>
+                ) : (
+                  <a
+                    href={fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
                     <img
                       src={fileUrl}
                       alt={`File ${index + 1}`}
                       className="w-full h-60 object-cover rounded-lg"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "../../imageNotFound.jpg";
+                      }}
                     />
-                  )}
-                </a>
-                <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  </a>
+                )}
+                {isMobile ? <div className="absolute top-2 right-2 flex space-x-2 transition-opacity duration-300">
                   <button
                     onClick={() => handleDownloadImage(fileUrl, fileName)}
                     className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
@@ -214,7 +309,49 @@ const ShowArchitecture = () => {
                       <line x1="12" y1="2" x2="12" y2="15"></line>
                     </svg>
                   </button>
-                </div>
+                </div> :
+                  <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <button
+                      onClick={() => handleDownloadImage(fileUrl, fileName)}
+                      className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
+                      title="Download File"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M20 16v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="8 12 12 16 16 12"></polyline>
+                        <line x1="12" y1="16" x2="12" y2="4"></line>
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleShareImage(fileUrl)}
+                      className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
+                      title="Share File"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                        <polyline points="16 6 12 2 8 6"></polyline>
+                        <line x1="12" y1="2" x2="12" y2="15"></line>
+                      </svg>
+                    </button>
+                  </div>}
                 <p className="text-center mt-2">{decodeURIComponent(fileName)}</p>
               </div>
             );
@@ -326,9 +463,12 @@ const ShowArchitecture = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-10">
+
+      {pdfModalUrl && isMobile && <PdfModal pdfUrl={pdfModalUrl} onClose={closePdfModal} />}
+
       <div className="flex justify-end">
         <button
-          onClick={() => window.history.back()} // Navigate back in history
+          onClick={() => window.history.back()} 
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-lg"
         >
           Back
