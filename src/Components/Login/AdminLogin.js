@@ -54,6 +54,7 @@ const AdminLogin = ({ setIsLoggedIn }) => {
         if (!response.ok) throw new Error("Login failed");
 
         const data = await response.json();
+        console.log("data which is the response from the backend",data);
         window.sessionStorage.setItem("authorizationadmin", data.token);
         toast.success("Login successful!");
         navigate("/admindashboard");
