@@ -138,7 +138,7 @@ const SignupForm = () => {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your phone number"
+              placeholder="Enter your phones  number"
               maxLength="10"
             />
             {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
