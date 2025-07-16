@@ -48,7 +48,9 @@ const SignupForm = () => {
       try {
         const response = await fetch('https://projectassociate-fld7.onrender.com/api/auth/signup', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json',
+                   'Access-Control-Allow-Origin':'*',
+                   'Access-Control-Allow-Headers':'Content-Type, Authorization'},
           body: JSON.stringify({
             name,
             email,
