@@ -25,9 +25,11 @@ const AdminLogin = ({ setIsLoggedIn }) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!email) newErrors.email = "Email is required";
-    else if (!emailPattern.test(email)) newErrors.email = "Invalid email address";
+    else if (!emailPattern.test(email))
+      newErrors.email = "Invalid email address";
     if (!password) newErrors.password = "Password is required";
-    else if (password.length < 6) newErrors.password = "Password must be at least 6 characters long";
+    else if (password.length < 6)
+      newErrors.password = "Password must be at least 6 characters long";
 
     setErrors(newErrors);
 
@@ -45,7 +47,7 @@ const AdminLogin = ({ setIsLoggedIn }) => {
     if (validate()) {
       setIsSubmitting(true);
       try {
-        const response = await fetch("https://projectassociate-fld7.onrender.com/signinadmin", {
+        const response = await fetch("https://api.mga2002.in/signinadmin", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -54,7 +56,7 @@ const AdminLogin = ({ setIsLoggedIn }) => {
         if (!response.ok) throw new Error("Login failed");
 
         const data = await response.json();
-        console.log("data which is the response from the backend",data);
+        console.log("data which is the response from the backend", data);
         window.sessionStorage.setItem("authorizationadmin", data.token);
         toast.success("Login successful!");
         navigate("/admindashboard");
@@ -93,11 +95,16 @@ const AdminLogin = ({ setIsLoggedIn }) => {
                 errors.email ? "border-red-500" : "border-gray-300"
               }`}
             />
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+            )}
           </div>
 
           <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium mb-1"
+            >
               Password
             </label>
             <div className="relative">
@@ -118,7 +125,9 @@ const AdminLogin = ({ setIsLoggedIn }) => {
                 {showPassword ? "Hide" : "Show"} {/* Button label */}
               </button>
             </div>
-            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+            )}
           </div>
 
           <button
@@ -130,16 +139,14 @@ const AdminLogin = ({ setIsLoggedIn }) => {
           >
             {isSubmitting ? "Submitting..." : "Login"}
           </button>
-        
-          
         </form>
         <button
-      type="button"
-      className="w-full py-2 mt-20 rounded-md text-white bg-blue-500 hover:bg-blue-600"
-      onClick={() => navigate("/")}
-    >
-      Back to Login
-    </button>
+          type="button"
+          className="w-full py-2 mt-20 rounded-md text-white bg-blue-500 hover:bg-blue-600"
+          onClick={() => navigate("/")}
+        >
+          Back to Login
+        </button>
       </div>
     </div>
   );

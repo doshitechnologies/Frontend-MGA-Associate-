@@ -4,12 +4,9 @@ import { Bounce, ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { saveAs } from "file-saver";
-import { useMediaQuery } from 'react-responsive';
-
+import { useMediaQuery } from "react-responsive";
 
 import PdfModal from "./PdfModal"; // Import the PdfModal component
-
-
 
 const ShowInteriorProject = () => {
   const { projectId } = useParams();
@@ -24,8 +21,6 @@ const ShowInteriorProject = () => {
 
   const isMobile = useMediaQuery({ maxWidth: 767 }); // Adjust breakpoint as needed
 
-
-
   const viewPdfInModal = (pdfUrl) => {
     setPdfModalUrl(pdfUrl);
   };
@@ -33,7 +28,6 @@ const ShowInteriorProject = () => {
   const closePdfModal = () => {
     setPdfModalUrl(null);
   };
-
 
   const fetchProjectData = async () => {
     setLoading(true);
@@ -59,7 +53,6 @@ const ShowInteriorProject = () => {
       setLoading(false);
     }
   };
-
 
   useEffect(() => {
     if (projectId) {
@@ -116,7 +109,6 @@ const ShowInteriorProject = () => {
         toast.error("Failed to copy image link.");
       });
   };
-
 
   const handleDownloadImage = async (fileUrl, fileName) => {
     const timeout = 5000; // 5 seconds timeout
@@ -176,7 +168,7 @@ const ShowInteriorProject = () => {
       formData.append("file", file);
 
       const { data } = await axios.post(
-        `https://projectassociate-fld7.onrender.com/api/auth/upload`,
+        `https://api.mga2002.in/api/auth/upload`,
         formData
       );
 
@@ -226,7 +218,6 @@ const ShowInteriorProject = () => {
     ["Venner", "Venner"],
     ["Laminates", "Laminates"],
 
-
     ["Ceiling_Shop", "Shop"],
     ["Ceiling_Ground", "Ground"],
     ["Ceiling_First", "First"],
@@ -272,52 +263,50 @@ const ShowInteriorProject = () => {
         onClick={() => toggleSection(sectionName)}
       >
         <h3 className="text-xl font-bold text-blue-700">{sectionName}</h3>
-        <button>
-          {expandedSections[sectionName] ? "▲" : "▼"}
-        </button>
+        <button>{expandedSections[sectionName] ? "▲" : "▼"}</button>
       </div>
-      {sectionName === "Project Details" ?
-        expandedSections[sectionName] && (
-          <div className="mt-2 ml-4">
-            <table className="table-auto border-collapse border border-gray-300 w-full">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border border-gray-300 px-4 py-2">Field</th>
-                  <th className="border border-gray-300 px-4 py-2">Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {fields.map((field) => (
-                  <tr key={field} className="text-gray-800">
-                    <td className="border border-gray-300 px-4 py-2 font-bold">{myMap.get(field)}</td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {editing ? (
-                        <input
-                          type="text"
-                          name={field}
-                          value={editingProject[field] || ""}
-                          onChange={handleChange}
-                          className="border p-2 rounded w-full"
-                        />
-                      ) : (
-                        <p>{projectData[field]}</p>
-                      )}
-                    </td>
+      {sectionName === "Project Details"
+        ? expandedSections[sectionName] && (
+            <div className="mt-2 ml-4">
+              <table className="table-auto border-collapse border border-gray-300 w-full">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-300 px-4 py-2">Field</th>
+                    <th className="border border-gray-300 px-4 py-2">Value</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) :
-        expandedSections[sectionName] && (
-          <div className="mt-2 ml-4">
-            {fields.map((field) => (
-              <div key={field}>
-                {renderFileInputs(field)}
-              </div>
-            ))}
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {fields.map((field) => (
+                    <tr key={field} className="text-gray-800">
+                      <td className="border border-gray-300 px-4 py-2 font-bold">
+                        {myMap.get(field)}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {editing ? (
+                          <input
+                            type="text"
+                            name={field}
+                            value={editingProject[field] || ""}
+                            onChange={handleChange}
+                            className="border p-2 rounded w-full"
+                          />
+                        ) : (
+                          <p>{projectData[field]}</p>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        : expandedSections[sectionName] && (
+            <div className="mt-2 ml-4">
+              {fields.map((field) => (
+                <div key={field}>{renderFileInputs(field)}</div>
+              ))}
+            </div>
+          )}
     </div>
   );
 
@@ -330,8 +319,7 @@ const ShowInteriorProject = () => {
           onChange={(e) => uploadFileHandler(e, sectionName)}
           className="text-blue-500 text-sm mb-4"
         />
-      )
-      }
+      )}
       {uploadingSection === sectionName && (
         <p className="text-blue-600 font-medium">Uploading...</p>
       )}
@@ -341,7 +329,11 @@ const ShowInteriorProject = () => {
             const fileName = fileUrl.split("/").pop().split("?")[0];
 
             return (
-              <div key={index} className="relative group" style={{ width: '100%', maxWidth: '300px' }}>
+              <div
+                key={index}
+                className="relative group"
+                style={{ width: "100%", maxWidth: "300px" }}
+              >
                 {fileUrl.endsWith(".pdf") ? (
                   <>
                     {isMobile ? (
@@ -401,49 +393,50 @@ const ShowInteriorProject = () => {
                   </a>
                 )}
 
-
-                {isMobile ? <div className="absolute top-2 right-2 flex space-x-2 transition-opacity duration-300">
-                  <button
-                    onClick={() => handleDownloadImage(fileUrl, fileName)}
-                    className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
-                    title="Download File"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                {isMobile ? (
+                  <div className="absolute top-2 right-2 flex space-x-2 transition-opacity duration-300">
+                    <button
+                      onClick={() => handleDownloadImage(fileUrl, fileName)}
+                      className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
+                      title="Download File"
                     >
-                      <path d="M20 16v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4"></path>
-                      <polyline points="8 12 12 16 16 12"></polyline>
-                      <line x1="12" y1="16" x2="12" y2="4"></line>
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleShareImage(fileUrl)}
-                    className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
-                    title="Share File"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M20 16v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="8 12 12 16 16 12"></polyline>
+                        <line x1="12" y1="16" x2="12" y2="4"></line>
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleShareImage(fileUrl)}
+                      className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
+                      title="Share File"
                     >
-                      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-                      <polyline points="16 6 12 2 8 6"></polyline>
-                      <line x1="12" y1="2" x2="12" y2="15"></line>
-                    </svg>
-                  </button>
-                </div> :
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                        <polyline points="16 6 12 2 8 6"></polyline>
+                        <line x1="12" y1="2" x2="12" y2="15"></line>
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
                   <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <button
                       onClick={() => handleDownloadImage(fileUrl, fileName)}
@@ -485,8 +478,11 @@ const ShowInteriorProject = () => {
                         <line x1="12" y1="2" x2="12" y2="15"></line>
                       </svg>
                     </button>
-                  </div>}
-                <p className="text-center mt-2">{decodeURIComponent(fileName)}</p>
+                  </div>
+                )}
+                <p className="text-center mt-2">
+                  {decodeURIComponent(fileName)}
+                </p>
               </div>
             );
           })
@@ -500,7 +496,9 @@ const ShowInteriorProject = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-10">
       {/* ... (rest of your component rendering) */}
-      {pdfModalUrl && isMobile && <PdfModal pdfUrl={pdfModalUrl} onClose={closePdfModal} />}
+      {pdfModalUrl && isMobile && (
+        <PdfModal pdfUrl={pdfModalUrl} onClose={closePdfModal} />
+      )}
       <div className="flex justify-end">
         <button
           onClick={() => window.history.back()} // Navigate back in history
@@ -531,9 +529,7 @@ const ShowInteriorProject = () => {
               "Pin",
               "email",
             ])}
-            {renderSection("Presentation Drawing", [
-              "Presentation_DrawingI",
-            ])}
+            {renderSection("Presentation Drawing", ["Presentation_DrawingI"])}
             {renderSection("Ceiling Detail", [
               "Ceiling_Shop",
               "Ceiling_Ground",
@@ -541,7 +537,7 @@ const ShowInteriorProject = () => {
               "Ceiling_Second",
               "Ceiling_Third",
               "Ceiling_Fourth",
-              "Ceiling_Fifth"
+              "Ceiling_Fifth",
             ])}
             {renderSection("Electrical Layout", [
               "Electrical_Shop",
@@ -559,7 +555,7 @@ const ShowInteriorProject = () => {
               "Furniture_Second",
               "Furniture_Third",
               "Furniture_Fourth",
-              "Furniture_Fifth"
+              "Furniture_Fifth",
             ])}
             {renderSection("Plumbing Layout", [
               "Plumbing_Shop",
@@ -568,11 +564,9 @@ const ShowInteriorProject = () => {
               "Plumbing_Second",
               "Plumbing_Third",
               "Plumbing_Fourth",
-              "Plumbing_Fifth"
+              "Plumbing_Fifth",
             ])}
-            {renderSection("3D Model", [
-              "ThreeD_Model",
-            ])}
+            {renderSection("3D Model", ["ThreeD_Model"])}
             {renderSection("Flooring Layout", [
               "Flooring_Shop",
               "Flooring_Ground",
@@ -580,22 +574,17 @@ const ShowInteriorProject = () => {
               "Flooring_Second",
               "Flooring_Third",
               "Flooring_Fourth",
-              "Flooring_Fifth"
+              "Flooring_Fifth",
             ])}
             {renderSection("Material Selection", [
               "Door_Handle",
               "Curtains",
               "Laminates",
               "Venner",
-              "Hinges"
+              "Hinges",
             ])}
-            {renderSection("Estimate & Bills", [
-              "Estimate",
-              "Bill"
-            ])}
-            {renderSection("Onsite Photos", [
-              "Site_Photo",
-            ])}
+            {renderSection("Estimate & Bills", ["Estimate", "Bill"])}
+            {renderSection("Onsite Photos", ["Site_Photo"])}
 
             <div className="flex justify-center space-x-4 mt-4">
               {editing ? (

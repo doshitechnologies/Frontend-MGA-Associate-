@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ViewInteriorProject = () => {
   const [projectData, setProjectData] = useState([]);
@@ -7,7 +7,7 @@ const ViewInteriorProject = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [projectsPerPage] = useState(9);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
   const API_URL = `${process.env.REACT_APP_BACKEND_URL}/interior`;
@@ -19,8 +19,10 @@ const ViewInteriorProject = () => {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/interior`);
-      if (!response.ok) throw new Error('Failed to fetch projects');
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/interior`
+      );
+      if (!response.ok) throw new Error("Failed to fetch projects");
       const data = await response.json();
       setProjectData(Array.isArray(data.data) ? data.data : []);
     } catch (err) {
@@ -31,18 +33,25 @@ const ViewInteriorProject = () => {
   };
 
   const deleteProject = async (projectId) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this project?');
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this project?"
+    );
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`https://projectassociate-fld7.onrender.com/api/interiors/${projectId}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) throw new Error('Failed to delete project');
-      setProjectData((prevData) => prevData.filter((project) => project._id !== projectId));
+      const response = await fetch(
+        `https://api.mga2002.in/api/interiors/${projectId}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) throw new Error("Failed to delete project");
+      setProjectData((prevData) =>
+        prevData.filter((project) => project._id !== projectId)
+      );
     } catch (err) {
-      console.error('Error deleting project:', err);
-      setError('Failed to delete project. Please try again.');
+      console.error("Error deleting project:", err);
+      setError("Failed to delete project. Please try again.");
     }
   };
 
@@ -66,13 +75,16 @@ const ViewInteriorProject = () => {
   const totalPages = Math.ceil(totalProjects / projectsPerPage);
   const indexOfLastProject = currentPage * projectsPerPage;
   const indexOfFirstProject = indexOfLastProject - projectsPerPage;
-  const currentProjects = filteredProjects.slice(indexOfFirstProject, indexOfLastProject);
+  const currentProjects = filteredProjects.slice(
+    indexOfFirstProject,
+    indexOfLastProject
+  );
 
   const handleShowMore = (projectId) => {
     if (projectId) {
       navigate(`/show/${projectId}`);
     } else {
-      console.error('Project ID is undefined.');
+      console.error("Project ID is undefined.");
     }
   };
 
@@ -99,7 +111,7 @@ const ViewInteriorProject = () => {
             key={project._id}
             project={project}
             handleShowMore={handleShowMore}
-          // deleteProject={deleteProject}
+            // deleteProject={deleteProject}
           />
         ))}
       </div>
@@ -119,11 +131,22 @@ const displayData = (data) => (data ? data : "-");
 const ProjectCard = ({ project, handleShowMore, deleteProject }) => (
   <div className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow flex flex-col justify-between h-full">
     <div className="p-6 flex-grow">
-      <h3 className="text-lg font-bold mb-4 text-center">Title: {project.title}</h3>
+      <h3 className="text-lg font-bold mb-4 text-center">
+        Title: {project.title}
+      </h3>
       <div className="space-y-2 text-gray-600 text-center">
-        <p><span className="font-medium">Client:</span> {displayData(project.clientName)}</p>
-        <p><span className="font-medium">Type:</span> {displayData(project.projectType)}</p>
-        <p><span className="font-medium">Project Head:</span> {displayData(project.projectHead)}</p>
+        <p>
+          <span className="font-medium">Client:</span>{" "}
+          {displayData(project.clientName)}
+        </p>
+        <p>
+          <span className="font-medium">Type:</span>{" "}
+          {displayData(project.projectType)}
+        </p>
+        <p>
+          <span className="font-medium">Project Head:</span>{" "}
+          {displayData(project.projectHead)}
+        </p>
         {/* <p><span className="font-medium">Rcc Designer Name:</span> {displayData(project.rccDesignerName)}</p> */}
         {/* <p><span className="font-medium">Address:</span> {displayData(project.siteAddress)}</p> */}
         {/* <p><span className="font-medium">Pan:</span> {displayData(project.Pan)}</p> */}
@@ -149,7 +172,9 @@ const Pagination = ({ currentPage, setCurrentPage, totalPages }) => (
   <div className="flex justify-between items-center mt-6">
     <button
       onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-      className={`px-4 py-2 bg-blue-500 text-white rounded ${currentPage === 1 && 'opacity-50 cursor-not-allowed'}`}
+      className={`px-4 py-2 bg-blue-500 text-white rounded ${
+        currentPage === 1 && "opacity-50 cursor-not-allowed"
+      }`}
       disabled={currentPage === 1}
     >
       Previous
@@ -157,7 +182,9 @@ const Pagination = ({ currentPage, setCurrentPage, totalPages }) => (
     <span>{`Page ${currentPage} of ${totalPages}`}</span>
     <button
       onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-      className={`px-4 py-2 bg-blue-500 text-white rounded ${currentPage === totalPages && 'opacity-50 cursor-not-allowed'}`}
+      className={`px-4 py-2 bg-blue-500 text-white rounded ${
+        currentPage === totalPages && "opacity-50 cursor-not-allowed"
+      }`}
       disabled={currentPage === totalPages}
     >
       Next

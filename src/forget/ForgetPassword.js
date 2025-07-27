@@ -2,7 +2,6 @@ import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 function ForgetPassword() {
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState({});
@@ -29,7 +28,7 @@ function ForgetPassword() {
       setIsSubmitting(true);
       try {
         const response = await fetch(
-          "https://projectassociate-fld7.onrender.com/api/auth/forgot-password",
+          "https://api.mga2002.in/api/auth/forgot-password",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -61,7 +60,9 @@ function ForgetPassword() {
         }}
       >
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm bg-opacity-90">
-          <h1 className="text-3xl font-bold mb-6 text-center">Forget Password</h1>
+          <h1 className="text-3xl font-bold mb-6 text-center">
+            Forget Password
+          </h1>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label htmlFor="email" className="block text-sm font-medium mb-1">
@@ -72,8 +73,9 @@ function ForgetPassword() {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`w-full p-2 border rounded-md ${errors.email ? "border-red-500" : "border-gray-300"
-                  }`}
+                className={`w-full p-2 border rounded-md ${
+                  errors.email ? "border-red-500" : "border-gray-300"
+                }`}
               />
               {errors.email && (
                 <p className="text-red-500 text-sm mt-1">{errors.email}</p>
@@ -84,8 +86,9 @@ function ForgetPassword() {
             )}
             <button
               type="submit"
-              className={`w-full py-2 rounded-md text-white ${isSubmitting ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-600"
-                }`}
+              className={`w-full py-2 rounded-md text-white ${
+                isSubmitting ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-600"
+              }`}
               disabled={isSubmitting}
             >
               {isSubmitting ? "Submitting..." : "Send Reset Password Email"}

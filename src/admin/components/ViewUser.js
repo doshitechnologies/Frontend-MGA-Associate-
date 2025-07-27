@@ -1,35 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import { FaTrashAlt, FaEye, FaEdit } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { FaTrashAlt, FaEye, FaEdit } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const ViewUsers = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [popupMessage, setPopupMessage] = useState('');
+  const [popupMessage, setPopupMessage] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
   const [editFormData, setEditFormData] = useState({});
   const usersPerPage = 5;
-  const token = window.sessionStorage.getItem('authorization');
+  const token = window.sessionStorage.getItem("authorization");
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('https://projectassociate-fld7.onrender.com/api/auth/users', {
-        method: 'GET',
+      const response = await fetch("https://api.mga2002.in/api/auth/users", {
+        method: "GET",
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch users');
+        throw new Error("Failed to fetch users");
       }
 
       const data = await response.json();
       setUsers(data);
     } catch (err) {
-      console.error('Error fetching users:', err);
+      console.error("Error fetching users:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -54,11 +54,11 @@ const ViewUsers = () => {
     e.preventDefault();
     try {
       const response = await fetch(
-        `https://projectassociate-fld7.onrender.com/api/auth/users/${editingUser._id}`,
+        `https://api.mga2002.in/api/auth/users/${editingUser._id}`,
         {
-          method: 'PATCH',
+          method: "PATCH",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(editFormData),
@@ -66,19 +66,21 @@ const ViewUsers = () => {
       );
 
       if (!response.ok) {
-        throw new Error('Failed to update user');
+        throw new Error("Failed to update user");
       }
 
       setUsers((prevUsers) =>
-        prevUsers.map((user) => (user._id === editingUser._id ? editFormData : user))
+        prevUsers.map((user) =>
+          user._id === editingUser._id ? editFormData : user
+        )
       );
-      setPopupMessage('User updated successfully!');
-      setTimeout(() => setPopupMessage(''), 3000);
+      setPopupMessage("User updated successfully!");
+      setTimeout(() => setPopupMessage(""), 3000);
       setEditingUser(null);
     } catch (err) {
-      console.error('Error updating user:', err);
+      console.error("Error updating user:", err);
       setPopupMessage(`Error: ${err.message}`);
-      setTimeout(() => setPopupMessage(''), 3000);
+      setTimeout(() => setPopupMessage(""), 3000);
     }
   };
 
@@ -104,35 +106,37 @@ const ViewUsers = () => {
   };
 
   const handleDelete = async (userId) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    if (window.confirm("Are you sure you want to delete this user?")) {
       try {
         const response = await fetch(
-          `https://projectassociate-fld7.onrender.com/api/auth/users/${userId}`,
+          `https://api.mga2002.in/api/auth/users/${userId}`,
           {
-            method: 'DELETE',
+            method: "DELETE",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
           }
         );
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to delete user');
+          throw new Error(errorData.message || "Failed to delete user");
         }
 
-        setUsers((prevUsers) => prevUsers.filter((user) => user._id !== userId));
+        setUsers((prevUsers) =>
+          prevUsers.filter((user) => user._id !== userId)
+        );
 
         if (currentUsers.length === 1 && currentPage > 1) {
           setCurrentPage((prev) => prev - 1);
         }
 
-        setPopupMessage('User deleted successfully!');
-        setTimeout(() => setPopupMessage(''), 3000);
+        setPopupMessage("User deleted successfully!");
+        setTimeout(() => setPopupMessage(""), 3000);
       } catch (err) {
-        console.error('Error deleting user:', err);
+        console.error("Error deleting user:", err);
         setPopupMessage(`Error: ${err.message}`);
-        setTimeout(() => setPopupMessage(''), 3000);
+        setTimeout(() => setPopupMessage(""), 3000);
       }
     }
   };
@@ -162,7 +166,9 @@ const ViewUsers = () => {
       )}
 
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">View Users</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
+          View Users
+        </h2>
         <div className="relative flex-1 md:flex-initial">
           <input
             type="text"
@@ -197,18 +203,22 @@ const ViewUsers = () => {
                   <div className="flex items-center">
                     <img
                       className="h-10 w-10 rounded-full mr-3"
-                      src={'/human-icon.png'}
+                      src={"/human-icon.png"}
                       alt={user.name}
                     />
                     <div>
-                      <div className="font-medium text-gray-900">{user.name}</div>
+                      <div className="font-medium text-gray-900">
+                        {user.name}
+                      </div>
                       <div className="text-sm text-gray-500">{user.dob}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex flex-col">
-                    <div className="flex items-center text-sm text-gray-500">📧 {user.email}</div>
+                    <div className="flex items-center text-sm text-gray-500">
+                      📧 {user.email}
+                    </div>
                     <div className="flex items-center text-sm text-gray-500 mt-1">
                       📍 {user.address}
                     </div>
@@ -216,10 +226,16 @@ const ViewUsers = () => {
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end space-x-4">
-                    <button onClick={() => setSelectedUser(user)} className="text-blue-500">
+                    <button
+                      onClick={() => setSelectedUser(user)}
+                      className="text-blue-500"
+                    >
                       <FaEye size={20} />
                     </button>
-                    <button onClick={() => handleEdit(user)} className="text-green-500">
+                    <button
+                      onClick={() => handleEdit(user)}
+                      className="text-green-500"
+                    >
                       <FaEdit size={20} />
                     </button>
                     <button
@@ -240,13 +256,31 @@ const ViewUsers = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
             <h2 className="text-xl font-bold mb-4">User Details</h2>
-            <p><strong>Name:</strong> {selectedUser.name}</p>
-            <p><strong>Email:</strong> {selectedUser.email}</p>
-            <p><strong>Date of Birth:</strong> {selectedUser.dob}</p>
-            <p><strong>Phone Number:</strong> {selectedUser.phone}</p>
-            <p><strong>Family Phone Number:</strong> {selectedUser.familyPhoneNumber}</p>
-            <p><strong>Address:</strong> {selectedUser.address}</p>
-            <button className="mt-4 px-4 py-2 bg-red-500 text-white rounded" onClick={() => setSelectedUser(null)}>Close</button>
+            <p>
+              <strong>Name:</strong> {selectedUser.name}
+            </p>
+            <p>
+              <strong>Email:</strong> {selectedUser.email}
+            </p>
+            <p>
+              <strong>Date of Birth:</strong> {selectedUser.dob}
+            </p>
+            <p>
+              <strong>Phone Number:</strong> {selectedUser.phone}
+            </p>
+            <p>
+              <strong>Family Phone Number:</strong>{" "}
+              {selectedUser.familyPhoneNumber}
+            </p>
+            <p>
+              <strong>Address:</strong> {selectedUser.address}
+            </p>
+            <button
+              className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+              onClick={() => setSelectedUser(null)}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
@@ -256,8 +290,11 @@ const ViewUsers = () => {
           <button
             key={index + 1}
             onClick={() => handlePageChange(index + 1)}
-            className={`px-3 py-1 rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
-              }`}
+            className={`px-3 py-1 rounded ${
+              currentPage === index + 1
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-gray-800"
+            }`}
           >
             {index + 1}
           </button>
@@ -268,7 +305,9 @@ const ViewUsers = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
             <h2 className="text-xl font-bold mb-4">Edit User</h2>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Name
+            </label>
             <input
               type="text"
               name="name"
@@ -278,7 +317,9 @@ const ViewUsers = () => {
               placeholder="Enter your name"
             />
 
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
             <input
               type="email"
               name="email"
@@ -288,16 +329,24 @@ const ViewUsers = () => {
               placeholder="Enter your email"
             />
 
-            <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Date of Birth
+            </label>
             <input
               type="date"
               name="dob"
-              value={editFormData.dob ? new Date(editFormData.dob).toISOString().split("T")[0] : ""}
+              value={
+                editFormData.dob
+                  ? new Date(editFormData.dob).toISOString().split("T")[0]
+                  : ""
+              }
               onChange={handleEditChange}
               className="w-full border p-2 mb-2"
             />
 
-            <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Phone Number
+            </label>
             <input
               type="text"
               name="phone"
@@ -307,7 +356,9 @@ const ViewUsers = () => {
               placeholder="Enter your phone number"
             />
 
-            <label className="block text-sm font-medium text-gray-700">Family Phone Number</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Family Phone Number
+            </label>
             <input
               type="text"
               name="familyPhoneNumber"
@@ -317,7 +368,9 @@ const ViewUsers = () => {
               placeholder="Enter your family phone number"
             />
 
-            <label className="block text-sm font-medium text-gray-700">Address</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Address
+            </label>
             <input
               type="text"
               name="address"
@@ -327,10 +380,16 @@ const ViewUsers = () => {
               placeholder="Enter your address"
             />
 
-            <button className="bg-blue-500 text-white px-4 py-2 mr-2" onClick={handleEditSubmit}>
+            <button
+              className="bg-blue-500 text-white px-4 py-2 mr-2"
+              onClick={handleEditSubmit}
+            >
               Save
             </button>
-            <button className="bg-gray-500 text-white px-4 py-2" onClick={() => setEditingUser(null)}>
+            <button
+              className="bg-gray-500 text-white px-4 py-2"
+              onClick={() => setEditingUser(null)}
+            >
               Cancel
             </button>
           </div>

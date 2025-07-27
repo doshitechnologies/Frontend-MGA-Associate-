@@ -5,9 +5,8 @@ import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { saveAs } from "file-saver";
 
-import { useMediaQuery } from 'react-responsive';
+import { useMediaQuery } from "react-responsive";
 import PdfModal from "./PdfModal"; // Import the PdfModal component
-
 
 const ShowArchitecture = () => {
   const { projectId } = useParams();
@@ -21,7 +20,6 @@ const ShowArchitecture = () => {
   const [pdfModalUrl, setPdfModalUrl] = useState(null);
 
   const isMobile = useMediaQuery({ maxWidth: 767 });
-
 
   const viewPdfInModal = (pdfUrl) => {
     setPdfModalUrl(pdfUrl);
@@ -42,11 +40,11 @@ const ShowArchitecture = () => {
       }
       const data = await response.json();
       if (!data) {
-        setLoading(true)
+        setLoading(true);
       }
       setProjectData(data.data);
       setEditingProject(data.data);
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching project data:", error);
       toast.error("Failed to fetch project data. Please try again.");
@@ -54,7 +52,6 @@ const ShowArchitecture = () => {
       setLoading(false);
     }
   };
-
 
   useEffect(() => {
     if (projectId) {
@@ -70,7 +67,7 @@ const ShowArchitecture = () => {
   const handleUpdate = async () => {
     try {
       const response = await fetch(
-        `https://projectassociate-fld7.onrender.com/api/architecture/update/${editingProject._id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/architecture/update/${editingProject._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -170,15 +167,15 @@ const ShowArchitecture = () => {
       formData.append("file", file);
 
       const { data } = await axios.post(
-        "https://projectassociate-fld7.onrender.com/api/auth/upload",
+        "https://api.mga2002.in/api/auth/upload",
         formData
       );
 
       const fileUrl = data.fileUrl;
       setEditingProject({
         ...editingProject,
-        [sectionName]: [...editingProject[sectionName], fileUrl]
-      })
+        [sectionName]: [...editingProject[sectionName], fileUrl],
+      });
       toast.success("File uploaded successfully!");
     } catch (error) {
       console.error("File upload failed:", error);
@@ -209,7 +206,6 @@ const ShowArchitecture = () => {
 
             return (
               <div key={index} className="relative group">
-
                 {fileUrl.endsWith(".pdf") ? (
                   <>
                     {isMobile ? (
@@ -268,48 +264,50 @@ const ShowArchitecture = () => {
                     />
                   </a>
                 )}
-                {isMobile ? <div className="absolute top-2 right-2 flex space-x-2 transition-opacity duration-300">
-                  <button
-                    onClick={() => handleDownloadImage(fileUrl, fileName)}
-                    className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
-                    title="Download File"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                {isMobile ? (
+                  <div className="absolute top-2 right-2 flex space-x-2 transition-opacity duration-300">
+                    <button
+                      onClick={() => handleDownloadImage(fileUrl, fileName)}
+                      className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
+                      title="Download File"
                     >
-                      <path d="M20 16v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4"></path>
-                      <polyline points="8 12 12 16 16 12"></polyline>
-                      <line x1="12" y1="16" x2="12" y2="4"></line>
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleShareImage(fileUrl)}
-                    className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
-                    title="Share File"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M20 16v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="8 12 12 16 16 12"></polyline>
+                        <line x1="12" y1="16" x2="12" y2="4"></line>
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleShareImage(fileUrl)}
+                      className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 shadow-md"
+                      title="Share File"
                     >
-                      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-                      <polyline points="16 6 12 2 8 6"></polyline>
-                      <line x1="12" y1="2" x2="12" y2="15"></line>
-                    </svg>
-                  </button>
-                </div> :
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                        <polyline points="16 6 12 2 8 6"></polyline>
+                        <line x1="12" y1="2" x2="12" y2="15"></line>
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
                   <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <button
                       onClick={() => handleDownloadImage(fileUrl, fileName)}
@@ -351,8 +349,11 @@ const ShowArchitecture = () => {
                         <line x1="12" y1="2" x2="12" y2="15"></line>
                       </svg>
                     </button>
-                  </div>}
-                <p className="text-center mt-2">{decodeURIComponent(fileName)}</p>
+                  </div>
+                )}
+                <p className="text-center mt-2">
+                  {decodeURIComponent(fileName)}
+                </p>
               </div>
             );
           })
@@ -402,7 +403,7 @@ const ShowArchitecture = () => {
     ["Bills_Documents", "Bills"],
     ["Consultancy_Fees", "Consultancy Fees"],
     ["Site_Photos", "Site Photos"],
-    ["Other_Documents", "Other Documents"]
+    ["Other_Documents", "Other Documents"],
   ]);
 
   const renderSection = (sectionName, fields) => (
@@ -412,63 +413,62 @@ const ShowArchitecture = () => {
         onClick={() => toggleSection(sectionName)}
       >
         <h3 className="text-xl font-bold text-blue-700">{sectionName}</h3>
-        <button>
-          {expandedSections[sectionName] ? "▲" : "▼"}
-        </button>
+        <button>{expandedSections[sectionName] ? "▲" : "▼"}</button>
       </div>
-      {sectionName === "Project Details" ?
-        expandedSections[sectionName] && (
-          <div className="mt-2 ml-4">
-            <table className="table-auto border-collapse border border-gray-300 w-full">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border border-gray-300 px-4 py-2">Field</th>
-                  <th className="border border-gray-300 px-4 py-2">Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {fields.map((field) => (
-                  <tr key={field} className="text-gray-800">
-                    <td className="border border-gray-300 px-4 py-2 font-bold">{myMap.get(field)}</td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {editing ? (
-                        <input
-                          type="text"
-                          name={field}
-                          value={editingProject[field] || ""}
-                          onChange={handleChange}
-                          className="border p-2 rounded w-full"
-                        />
-                      ) : (
-                        <p>{projectData[field]}</p>
-                      )}
-                    </td>
+      {sectionName === "Project Details"
+        ? expandedSections[sectionName] && (
+            <div className="mt-2 ml-4">
+              <table className="table-auto border-collapse border border-gray-300 w-full">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-300 px-4 py-2">Field</th>
+                    <th className="border border-gray-300 px-4 py-2">Value</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) :
-        expandedSections[sectionName] && (
-          <div className="mt-2 ml-4">
-            {fields.map((field) => (
-              <div key={field}>
-                {renderFileInputs(field)}
-              </div>
-            ))}
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {fields.map((field) => (
+                    <tr key={field} className="text-gray-800">
+                      <td className="border border-gray-300 px-4 py-2 font-bold">
+                        {myMap.get(field)}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {editing ? (
+                          <input
+                            type="text"
+                            name={field}
+                            value={editingProject[field] || ""}
+                            onChange={handleChange}
+                            className="border p-2 rounded w-full"
+                          />
+                        ) : (
+                          <p>{projectData[field]}</p>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        : expandedSections[sectionName] && (
+            <div className="mt-2 ml-4">
+              {fields.map((field) => (
+                <div key={field}>{renderFileInputs(field)}</div>
+              ))}
+            </div>
+          )}
     </div>
   );
 
   return (
     <div className="min-h-screen bg-gray-50 p-10">
-
-      {pdfModalUrl && isMobile && <PdfModal pdfUrl={pdfModalUrl} onClose={closePdfModal} />}
+      {pdfModalUrl && isMobile && (
+        <PdfModal pdfUrl={pdfModalUrl} onClose={closePdfModal} />
+      )}
 
       <div className="flex justify-end">
         <button
-          onClick={() => window.history.back()} 
+          onClick={() => window.history.back()}
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-lg"
         >
           Back
@@ -533,12 +533,9 @@ const ShowArchitecture = () => {
             {renderSection("Estimates & Bills", [
               "Estimate",
               "Bills_Documents",
-              "Consultancy_Fees"
+              "Consultancy_Fees",
             ])}
-            {renderSection("Onsite Photos", [
-              "Site_Photos",
-              "Other_Documents"
-            ])}
+            {renderSection("Onsite Photos", ["Site_Photos", "Other_Documents"])}
 
             <div className="flex justify-center space-x-4 mt-4">
               {editing ? (
@@ -577,4 +574,3 @@ const ShowArchitecture = () => {
 };
 
 export default ShowArchitecture;
-

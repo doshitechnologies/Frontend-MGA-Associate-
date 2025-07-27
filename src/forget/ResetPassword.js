@@ -16,7 +16,8 @@ function ResetPassword() {
     if (!newPassword) {
       validationErrors.newPassword = "Password is required";
     } else if (newPassword.length < 6) {
-      validationErrors.newPassword = "Password must be at least 6 characters long";
+      validationErrors.newPassword =
+        "Password must be at least 6 characters long";
     }
 
     if (!confirmPassword) {
@@ -35,7 +36,7 @@ function ResetPassword() {
       setIsSubmitting(true);
       try {
         const response = await fetch(
-          "https://projectassociate-fld7.onrender.com/api/auth/reset-password",
+          "https://api.mga2002.in/api/auth/reset-password",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -57,7 +58,8 @@ function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-400 to-indigo-600 p-4"
+    <div
+      className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-400 to-indigo-600 p-4"
       style={{
         backgroundImage: `url('back.jpg')`,
         backgroundSize: "cover",
@@ -75,8 +77,9 @@ function ResetPassword() {
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className={`w-full p-2 border rounded-md ${errors.newPassword ? "border-red-500" : "border-gray-300"
-                }`}
+              className={`w-full p-2 border rounded-md ${
+                errors.newPassword ? "border-red-500" : "border-gray-300"
+              }`}
             />
             {errors.newPassword && (
               <p className="text-red-500 text-sm">{errors.newPassword}</p>
@@ -90,18 +93,22 @@ function ResetPassword() {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className={`w-full p-2 border rounded-md ${errors.confirmPassword ? "border-red-500" : "border-gray-300"
-                }`}
+              className={`w-full p-2 border rounded-md ${
+                errors.confirmPassword ? "border-red-500" : "border-gray-300"
+              }`}
             />
             {errors.confirmPassword && (
               <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
             )}
           </div>
-          {errors.api && <p className="text-red-500 text-sm mb-4">{errors.api}</p>}
+          {errors.api && (
+            <p className="text-red-500 text-sm mb-4">{errors.api}</p>
+          )}
           <button
             type="submit"
-            className={`w-full py-2 rounded-md text-white ${isSubmitting ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-600"
-              }`}
+            className={`w-full py-2 rounded-md text-white ${
+              isSubmitting ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-600"
+            }`}
             disabled={isSubmitting}
           >
             {isSubmitting ? "Submitting..." : "Reset Password"}

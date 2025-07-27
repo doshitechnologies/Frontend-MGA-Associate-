@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const OtpVerification = () => {
-  const [otp, setOtp] = useState('');
-  const [error, setError] = useState('');
+  const [otp, setOtp] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -11,7 +11,7 @@ const OtpVerification = () => {
 
   useEffect(() => {
     if (!email) {
-      alert('Email not found. Redirecting to the previous page.');
+      alert("Email not found. Redirecting to the previous page.");
       navigate(-1);
     }
   }, [email, navigate]);
@@ -21,20 +21,20 @@ const OtpVerification = () => {
 
     // Validate OTP length and numeric value
     if (!otp) {
-      setError('OTP is required');
+      setError("OTP is required");
       return;
     } else if (!/^\d{6}$/.test(otp)) {
-      setError('OTP must be a 6-digit number');
+      setError("OTP must be a 6-digit number");
       return;
     }
 
     setLoading(true); // Set loading state to true
 
     try {
-      const response = await fetch('https://projectassociate-fld7.onrender.com/api/auth/verify', {
-        method: 'POST',
+      const response = await fetch("https://api.mga2002.in/api/auth/verify", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, verificationCode: otp }), // Send email and OTP
       });
@@ -43,17 +43,17 @@ const OtpVerification = () => {
 
       if (!response.ok) {
         // Handle errors from the server
-        alert(data.message || 'Incorrect OTP, please try again.'); // Show alert for incorrect OTP
-        setError(data.message || 'Verification failed');
+        alert(data.message || "Incorrect OTP, please try again."); // Show alert for incorrect OTP
+        setError(data.message || "Verification failed");
         setLoading(false); // Reset loading state
         return;
       }
 
       alert(data.message); // Show success message
-      navigate('/'); // Redirect to login page
+      navigate("/"); // Redirect to login page
     } catch (err) {
-      console.error('Error during OTP verification:', err);
-      setError('An error occurred. Please try again.'); // Set error state
+      console.error("Error during OTP verification:", err);
+      setError("An error occurred. Please try again."); // Set error state
     } finally {
       setLoading(false); // Reset loading state
     }
@@ -62,10 +62,14 @@ const OtpVerification = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-400 to-indigo-600 p-4">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md bg-opacity-90">
-        <h1 className="text-3xl font-bold mb-6 text-center">OTP Verification</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center">
+          OTP Verification
+        </h1>
         <form onSubmit={handleVerifyOtp}>
           <div className="mb-4">
-            <label htmlFor="otp" className="block text-sm font-medium mb-1">Enter OTP</label>
+            <label htmlFor="otp" className="block text-sm font-medium mb-1">
+              Enter OTP
+            </label>
             <input
               type="text"
               id="otp"
@@ -77,10 +81,12 @@ const OtpVerification = () => {
           </div>
           <button
             type="submit"
-            className={`w-full py-2 rounded-md text-white ${loading ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'}`}
+            className={`w-full py-2 rounded-md text-white ${
+              loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
+            }`}
             disabled={loading} // Disable button while loading
           >
-            {loading ? 'Verifying...' : 'Verify OTP'}
+            {loading ? "Verifying..." : "Verify OTP"}
           </button>
         </form>
       </div>

@@ -1,33 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { FaTrashAlt } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { FaTrashAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const ViewUsers = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 5;
-  const token = window.localStorage.getItem('authorization');
+  const token = window.localStorage.getItem("authorization");
 
   const fetchUsers = async () => {
     try {
       if (!token) {
-        throw new Error('No authorization token found');
+        throw new Error("No authorization token found");
       }
 
-      const response = await fetch('https://projectassociate-fld7.onrender.com/api/auth/users', {
-        method: 'GET',
+      const response = await fetch("https://api.mga2002.in/api/auth/users", {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch users');
+        throw new Error("Failed to fetch users");
       }
 
       const data = await response.json();
@@ -35,8 +35,8 @@ const ViewUsers = () => {
     } catch (err) {
       console.error("Error fetching users:", err);
       setError(err.message);
-      if (err.message === 'No authorization token found') {
-        navigate('/login');
+      if (err.message === "No authorization token found") {
+        navigate("/login");
       }
     } finally {
       setLoading(false);
@@ -69,32 +69,37 @@ const ViewUsers = () => {
   };
 
   const logoutHandler = () => {
-    window.localStorage.removeItem('authorization');
-    navigate('/login');
+    window.localStorage.removeItem("authorization");
+    navigate("/login");
   };
 
   const handleDelete = async (userId) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        const response = await fetch(`https://projectassociate-fld7.onrender.com/api/auth/users/${userId}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+        const response = await fetch(
+          `https://api.mga2002.in/api/auth/users/${userId}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
           }
-        });
+        );
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to delete user');
+          throw new Error(errorData.message || "Failed to delete user");
         }
 
         // Update state to remove deleted user immediately
-        setUsers(prevUsers => prevUsers.filter(user => user._id !== userId));
+        setUsers((prevUsers) =>
+          prevUsers.filter((user) => user._id !== userId)
+        );
 
         // Adjust current page if necessary
         if (currentUsers.length === 1 && currentPage > 1) {
-          setCurrentPage(prev => prev - 1);
+          setCurrentPage((prev) => prev - 1);
         }
       } catch (err) {
         console.error("Error deleting user:", err);
@@ -102,8 +107,6 @@ const ViewUsers = () => {
       }
     }
   };
-
-
 
   if (loading) {
     return (
@@ -124,7 +127,9 @@ const ViewUsers = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">View Users</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
+          View Users
+        </h2>
         <div className="relative flex-1 md:flex-initial">
           <input
             type="text"
@@ -147,9 +152,15 @@ const ViewUsers = () => {
         <table className="w-full table-auto">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                User
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Contact
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -157,17 +168,27 @@ const ViewUsers = () => {
               <tr key={user._id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">
                   <div className="flex items-center">
-                    <img className="h-10 w-10 rounded-full mr-3" src={user.avatar || ''} alt={user.name} />
+                    <img
+                      className="h-10 w-10 rounded-full mr-3"
+                      src={user.avatar || ""}
+                      alt={user.name}
+                    />
                     <div>
-                      <div className="font-medium text-gray-900">{user.name}</div>
+                      <div className="font-medium text-gray-900">
+                        {user.name}
+                      </div>
                       <div className="text-sm text-gray-500">{user.dob}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex flex-col">
-                    <div className="flex items-center text-sm text-gray-500">📧 {user.email}</div>
-                    <div className="flex items-center text-sm text-gray-500 mt-1">📍 {user.address}</div>
+                    <div className="flex items-center text-sm text-gray-500">
+                      📧 {user.email}
+                    </div>
+                    <div className="flex items-center text-sm text-gray-500 mt-1">
+                      📍 {user.address}
+                    </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 text-right">
@@ -192,8 +213,11 @@ const ViewUsers = () => {
           <button
             key={index + 1}
             onClick={() => handlePageChange(index + 1)}
-            className={`px-3 py-1 rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
-              }`}
+            className={`px-3 py-1 rounded ${
+              currentPage === index + 1
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-gray-800"
+            }`}
           >
             {index + 1}
           </button>
