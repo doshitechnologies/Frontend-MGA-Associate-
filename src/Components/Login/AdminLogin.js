@@ -48,7 +48,7 @@ const AdminLogin = ({ setIsLoggedIn }) => {
       setIsSubmitting(true);
       try {
         const response = await fetch(
-          `https://api.mga2002.in/admin/signinadmin`,
+          `https://projectassociate-fld7.onrender.com/api/admin/signinadmin`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
