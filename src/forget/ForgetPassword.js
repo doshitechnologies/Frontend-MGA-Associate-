@@ -37,7 +37,7 @@ function ForgetPassword() {
         );
         if (!response.ok) throw new Error("Failed to send reset email");
 
-        const data = await response.json();
+        // const data = await response.json();
         setErrors({});
         alert("Password reset email sent. Please check your email.");
         navigate("/"); // Redirect to login after success
