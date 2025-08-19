@@ -28,7 +28,7 @@ function ForgetPassword() {
       setIsSubmitting(true);
       try {
         const response = await fetch(
-          "https://api.mga2002.in/api/auth/forgot-password",
+          "https://projectassociate-fld7.onrender.com/api/auth/forgot-password",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -36,6 +36,7 @@ function ForgetPassword() {
           }
         );
         if (!response.ok) throw new Error("Failed to send reset email");
+
         const data = await response.json();
         setErrors({});
         alert("Password reset email sent. Please check your email.");
