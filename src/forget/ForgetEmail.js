@@ -35,7 +35,7 @@ function ForgetEmail() {
       try {
         // Send phone number to backend to find the email associated with it
         const response = await fetch(
-          "https://api.mga2002.in/api/auth/forgot-email",
+          "https://projectassociate-fld7.onrender.com/api/auth/login/api/auth/forgot-email",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
