@@ -47,7 +47,7 @@ const LoginForm = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch("https://44.223.0.105/api/auth/login", {
+      const response = await fetch("https://projectassociate-fld7.onrender.com/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
