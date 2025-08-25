@@ -52,7 +52,7 @@ const SignupForm = () => {
     if (validate()) {
       setIsSubmitting(true);
       try {
-        const response = await fetch("https://api.mga2002.in/api/auth/signup", {
+        const response = await fetch("https://projectassociate-fld7.onrender.com/api/auth/signup", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
