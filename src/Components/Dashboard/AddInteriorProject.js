@@ -303,7 +303,7 @@ const AddInteriorProject = ({ isActive, onClick }) => {
                   e.stopPropagation();
                   try {
                     await axios.delete(
-                      `http://localhost:8000/api/auth/file/${encodeURIComponent(fileUrl)}`
+                      `https://projectassociate-fld7.onrender.com/api/auth/file/${encodeURIComponent(fileUrl)}`
                     );
                     setFormData((prevFormData) => {
                       const updatedFiles = [...prevFormData.documentSections[sectionName]];
