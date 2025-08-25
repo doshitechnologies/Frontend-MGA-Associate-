@@ -28,7 +28,7 @@ function ForgetPassword() {
       setIsSubmitting(true);
       try {
         const response = await fetch(
-          "https://api.mga2002.in/api/auth/forgot-password",
+          "https://projectassociate-fld7.onrender.com/api/auth/login/api/auth/forgot-password",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
