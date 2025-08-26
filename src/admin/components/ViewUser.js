@@ -18,7 +18,7 @@ const ViewUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("https://api.mga2002.in/api/auth/users", {
+      const response = await fetch("https://projectassociate-fld7.onrender.com/api/auth/users", {
         method: "GET",
       });
 
@@ -54,7 +54,7 @@ const ViewUsers = () => {
     e.preventDefault();
     try {
       const response = await fetch(
-        `https://api.mga2002.in/api/auth/users/${editingUser._id}`,
+        `https://projectassociate-fld7.onrender.com/api/auth/users/${editingUser._id}`,
         {
           method: "PATCH",
           headers: {
@@ -109,7 +109,7 @@ const ViewUsers = () => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
         const response = await fetch(
-          `https://api.mga2002.in/api/auth/users/${userId}`,
+          `https://projectassociate-fld7.onrender.com/api/auth/users/${userId}`,
           {
             method: "DELETE",
             headers: {

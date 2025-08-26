@@ -77,7 +77,7 @@ const ViewUsers = () => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
         const response = await fetch(
-          `https://api.mga2002.in/api/auth/users/${userId}`,
+          `https://projectassociate-fld7.onrender.com/api/auth/users/${userId}`,
           {
             method: "DELETE",
             headers: {

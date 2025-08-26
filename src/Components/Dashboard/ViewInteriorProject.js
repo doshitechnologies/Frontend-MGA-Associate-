@@ -40,7 +40,7 @@ const ViewInteriorProject = () => {
 
     try {
       const response = await fetch(
-        `https://api.mga2002.in/api/interiors/${projectId}`,
+        `https://projectassociate-fld7.onrender.com/api/interiors/${projectId}`,
         {
           method: "DELETE",
         }

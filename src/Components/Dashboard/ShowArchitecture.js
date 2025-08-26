@@ -167,7 +167,7 @@ const ShowArchitecture = () => {
       formData.append("file", file);
 
       const { data } = await axios.post(
-        "https://api.mga2002.in/api/auth/upload",
+        "https://projectassociate-fld7.onrender.com/api/auth/upload",
         formData
       );
 
