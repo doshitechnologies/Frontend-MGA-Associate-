@@ -10,7 +10,7 @@ const ViewInteriorProject = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
-  const API_URL = `${process.env.REACT_APP_BACKEND_URL}/interior`;
+  const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api/interior`;
 
   useEffect(() => {
     fetchProjects();
@@ -20,7 +20,7 @@ const ViewInteriorProject = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/interior`
+        `${process.env.REACT_APP_BACKEND_URL}/api/interior`,
       );
       if (!response.ok) throw new Error("Failed to fetch projects");
       const data = await response.json();
@@ -34,20 +34,20 @@ const ViewInteriorProject = () => {
 
   const deleteProject = async (projectId) => {
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this project?"
+      "Are you sure you want to delete this project?",
     );
     if (!confirmDelete) return;
 
     try {
       const response = await fetch(
-        `https://projectassociate-fld7.onrender.com/api/interiors/${projectId}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/interiors/${projectId}`,
         {
           method: "DELETE",
-        }
+        },
       );
       if (!response.ok) throw new Error("Failed to delete project");
       setProjectData((prevData) =>
-        prevData.filter((project) => project._id !== projectId)
+        prevData.filter((project) => project._id !== projectId),
       );
     } catch (err) {
       console.error("Error deleting project:", err);
@@ -68,7 +68,7 @@ const ViewInteriorProject = () => {
   );
 
   const filteredProjects = projectData.filter((project) =>
-    project.clientName.toLowerCase().includes(searchTerm.toLowerCase())
+    project.clientName.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const totalProjects = filteredProjects.length;
@@ -77,7 +77,7 @@ const ViewInteriorProject = () => {
   const indexOfFirstProject = indexOfLastProject - projectsPerPage;
   const currentProjects = filteredProjects.slice(
     indexOfFirstProject,
-    indexOfLastProject
+    indexOfLastProject,
   );
 
   const handleShowMore = (projectId) => {

@@ -10,9 +10,10 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
+  // ✅ Only redirect if token already exists (user already logged in)
   useEffect(() => {
     const token = localStorage.getItem("authorization");
-    navigate(token ? "/home" : "/");
+    if (token) navigate("/home");
   }, [navigate]);
 
   const validate = () => {
@@ -42,23 +43,47 @@ const LoginForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // ✅ Prevent page refresh
+
+    // ✅ Validate before API call
     if (!validate()) return;
 
     setIsSubmitting(true);
     try {
-      const response = await fetch("https://projectassociate-fld7.onrender.com/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (!response.ok) throw new Error("Invalid credentials");
+      const response = await fetch(
+        "${process.env.REACT_APP_BACKEND_URL}/api/auth/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        },
+      );
+
       const data = await response.json();
+      console.log("Server response:", data); // ✅ Debug log
+
+      // ✅ Handle server errors with real message
+      if (!response.ok) {
+        toast.error(data.message || "Invalid credentials");
+        return;
+      }
+
+      // ✅ Check token exists in response
+      if (!data.token) {
+        toast.error("Login failed. No token received.");
+        return;
+      }
+
+      // ✅ Store token
       localStorage.setItem("authorization", data.token);
+
       toast.success("Login successful!");
+
+      // ✅ Navigate immediately
       navigate("/home");
     } catch (error) {
-      toast.error("Invalid email or password. Please try again.");
+      console.error("Login error:", error.message);
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -66,14 +91,14 @@ const LoginForm = () => {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-400 to-indigo-600 p-4"
+      className="min-h-screen flex items-center justify-center p-4"
       style={{
         backgroundImage: `url('back.jpg')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <ToastContainer />
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm bg-opacity-90">
         <h1 className="text-3xl font-bold mb-6 text-center">Login</h1>
         <form onSubmit={handleSubmit}>
@@ -87,7 +112,8 @@ const LoginForm = () => {
               id="email"
               value={formData.email}
               onChange={handleChange}
-              className={`w-full p-2 border rounded-md ${
+              placeholder="Enter your email"
+              className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                 errors.email ? "border-red-500" : "border-gray-300"
               }`}
             />
@@ -106,17 +132,18 @@ const LoginForm = () => {
             </label>
             <div className="relative">
               <input
-                type={showPassword ? "text" : "password"} // Toggle input type
+                type={showPassword ? "text" : "password"}
                 id="password"
                 value={formData.password}
                 onChange={handleChange}
-                className={`w-full p-2 border rounded-md ${
+                placeholder="Enter your password"
+                className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                   errors.password ? "border-red-500" : "border-gray-300"
                 }`}
               />
               <button
                 type="button"
-                onClick={() => setShowPassword((prev) => !prev)} // Toggle visibility state
+                onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute right-3 top-2 text-sm text-gray-600 focus:outline-none"
               >
                 {showPassword ? "Hide" : "Show"}
@@ -130,16 +157,19 @@ const LoginForm = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full py-2 rounded-md text-white ${
-              isSubmitting ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-600"
+            className={`w-full py-2 rounded-md text-white font-semibold transition-colors ${
+              isSubmitting
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600"
             }`}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Submitting..." : "Login"}
+            {isSubmitting ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <div className="mt-4 text-center">
+        {/* Bottom Links */}
+        <div className="mt-4 text-center space-y-2">
           <p className="text-sm">
             Don't have an account?{" "}
             <button
@@ -150,28 +180,24 @@ const LoginForm = () => {
             </button>
           </p>
           <p className="text-sm">
-            Log In Admin{" "}
             <button
               onClick={() => navigate("/adminlogin")}
               className="text-blue-500 hover:underline focus:outline-none"
             >
-              Login Admin
+              Login as Admin
             </button>
           </p>
           <p className="text-sm">
             <Link
               to="/forgetPassword"
-              className="text-blue-500 hover:underline focus:outline-none"
+              className="text-blue-500 hover:underline"
             >
-              Forget Password
+              Forgot Password?
             </Link>
           </p>
           <p className="text-sm">
-            <Link
-              to="/forgetEmail"
-              className="text-blue-500 hover:underline focus:outline-none"
-            >
-              Forget Email
+            <Link to="/forgetEmail" className="text-blue-500 hover:underline">
+              Forgot Email?
             </Link>
           </p>
         </div>

@@ -52,24 +52,27 @@ const SignupForm = () => {
     if (validate()) {
       setIsSubmitting(true);
       try {
-        const response = await fetch("https://projectassociate-fld7.onrender.com/api/auth/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        const response = await fetch(
+          "${process.env.REACT_APP_BACKEND_URL}/api/auth/signup",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            },
+            body: JSON.stringify({
+              name,
+              email,
+              dob,
+              phone,
+              familyPhoneNumber,
+              password,
+              confirmPassword, // Include confirmPassword in the request body
+              address,
+            }),
           },
-          body: JSON.stringify({
-            name,
-            email,
-            dob,
-            phone,
-            familyPhoneNumber,
-            password,
-            confirmPassword, // Include confirmPassword in the request body
-            address,
-          }),
-        });
+        );
         // if (!response.ok) throw new Error('Signup failed');
         const data = await response.json();
         if (data.message == "Email already registered") {

@@ -35,12 +35,12 @@ function ForgetEmail() {
       try {
         // Send phone number to backend to find the email associated with it
         const response = await fetch(
-          "https://projectassociate-fld7.onrender.com/api/auth/forgot-email",
+          "${process.env.REACT_APP_BACKEND_URL}/api/auth/forgot-email",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ phone }),
-          }
+          },
         );
 
         if (!response.ok) throw new Error("User not found");

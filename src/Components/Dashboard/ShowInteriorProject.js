@@ -33,7 +33,7 @@ const ShowInteriorProject = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/interior/interior/${projectId}`
+        `${process.env.REACT_APP_BACKEND_URL}/interior/interior/${projectId}`,
       );
       if (!response.ok) {
         throw new Error("Failed to fetch project data");
@@ -68,12 +68,12 @@ const ShowInteriorProject = () => {
   const handleUpdate = async () => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/interior/update/interiors/${editingProject._id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/interior/update/interiors/${editingProject._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(editingProject),
-        }
+        },
       );
       if (!response.ok) {
         throw new Error("Failed to update project data");
@@ -152,7 +152,7 @@ const ShowInteriorProject = () => {
           },
         },
         finally: () => clearTimeout(timeoutId), // Ensure timeout is cleared on completion/error
-      }
+      },
     );
   };
 
@@ -168,8 +168,8 @@ const ShowInteriorProject = () => {
       formData.append("file", file);
 
       const { data } = await axios.post(
-        `https://projectassociate-fld7.onrender.com/api/auth/upload`,
-        formData
+        `${process.env.REACT_APP_BACKEND_URL}/api/auth/upload`,
+        formData,
       );
 
       const fileUrl = data.fileUrl;

@@ -28,12 +28,12 @@ function ForgetPassword() {
       setIsSubmitting(true);
       try {
         const response = await fetch(
-          "https://projectassociate-fld7.onrender.com/api/auth/forgot-password",
+          "${process.env.REACT_APP_BACKEND_URL}/api/auth/forgot-password",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email }),
-          }
+          },
         );
         if (!response.ok) throw new Error("Failed to send reset email");
 

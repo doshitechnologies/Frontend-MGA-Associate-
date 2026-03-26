@@ -31,13 +31,16 @@ const OtpVerification = () => {
     setLoading(true); // Set loading state to true
 
     try {
-      const response = await fetch("https://projectassociate-fld7.onrender.com/api/auth/verify", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "${process.env.REACT_APP_BACKEND_URL}/api/auth/verify",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, verificationCode: otp }), // Send email and OTP
         },
-        body: JSON.stringify({ email, verificationCode: otp }), // Send email and OTP
-      });
+      );
 
       const data = await response.json();
 

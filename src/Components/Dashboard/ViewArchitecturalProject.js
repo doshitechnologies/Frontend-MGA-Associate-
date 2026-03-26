@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { FaPencilAlt, FaTrash } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const ViewArchitecturalProject = () => {
   const [projectData, setProjectData] = useState([]);
@@ -8,21 +8,29 @@ const ViewArchitecturalProject = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [projectsPerPage] = useState(9);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const API_URL = `${process.env.REACT_APP_BACKEND_URL}/architecture/data`;
+  const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api/architecture/data`;
 
   useEffect(() => {
     const fetchProjects = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/architecture/data`);
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/api/architecture/data`,
+        );
         if (!response.ok) {
-          throw new Error('Failed to fetch projects');
+          throw new Error("Failed to fetch projects");
         }
         const data = await response.json();
-        setProjectData(data.success ? (Array.isArray(data.data) ? data.data : [data.data]) : []);
+        setProjectData(
+          data.success
+            ? Array.isArray(data.data)
+              ? data.data
+              : [data.data]
+            : [],
+        );
       } catch (err) {
         setError(err.message);
       } finally {
@@ -32,7 +40,6 @@ const ViewArchitecturalProject = () => {
 
     fetchProjects();
   }, [API_URL]);
-
 
   const renderLoading = () => (
     <div className="flex justify-center items-center min-h-screen">
@@ -47,26 +54,31 @@ const ViewArchitecturalProject = () => {
   );
 
   const filteredProjects = projectData.filter((project) =>
-    project.clientName?.toLowerCase().includes(searchTerm.toLowerCase())
+    project.clientName?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const totalProjects = filteredProjects.length; // Use filtered projects for pagination
   const totalPages = Math.ceil(totalProjects / projectsPerPage);
   const indexOfLastProject = currentPage * projectsPerPage;
   const indexOfFirstProject = indexOfLastProject - projectsPerPage;
-  const currentProjects = filteredProjects.slice(indexOfFirstProject, indexOfLastProject);
+  const currentProjects = filteredProjects.slice(
+    indexOfFirstProject,
+    indexOfLastProject,
+  );
 
   const handleShowMore = (projectId) => {
     if (projectId) {
       navigate(`/shows/${projectId}`);
     } else {
-      console.error('Project ID is undefined.');
+      console.error("Project ID is undefined.");
     }
   };
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6 text-center">Architectural Projects</h2>
+      <h2 className="text-2xl font-bold mb-6 text-center">
+        Architectural Projects
+      </h2>
 
       <div className="mb-4">
         <input
@@ -113,9 +125,18 @@ const ProjectCard = ({ project, handleShowMore, handleDelete }) => {
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow flex flex-col justify-between h-full">
       <div className="space-y-2 text-gray-600 text-center">
-        <p><span className="font-medium">Client:</span> {displayData(project.clientName)}</p>
-        <p><span className="font-medium">Type:</span> {displayData(project.projectType)}</p>
-        <p><span className="font-medium">Project Head:</span> {displayData(project.projectHead)}</p>
+        <p>
+          <span className="font-medium">Client:</span>{" "}
+          {displayData(project.clientName)}
+        </p>
+        <p>
+          <span className="font-medium">Type:</span>{" "}
+          {displayData(project.projectType)}
+        </p>
+        <p>
+          <span className="font-medium">Project Head:</span>{" "}
+          {displayData(project.projectHead)}
+        </p>
         <div className="p-4 border-t flex justify-around">
           <button
             onClick={() => handleShowMore(project._id)}
@@ -127,7 +148,7 @@ const ProjectCard = ({ project, handleShowMore, handleDelete }) => {
       </div>
     </div>
   );
-}
+};
 
 const Pagination = ({ currentPage, setCurrentPage, totalPages }) => {
   const handlePrevPage = () => {
@@ -144,11 +165,21 @@ const Pagination = ({ currentPage, setCurrentPage, totalPages }) => {
 
   return (
     <div className="flex justify-between mt-6">
-      <button onClick={handlePrevPage} disabled={currentPage === 1} className="bg-blue-500 text-white px-4 py-2 rounded">
+      <button
+        onClick={handlePrevPage}
+        disabled={currentPage === 1}
+        className="bg-blue-500 text-white px-4 py-2 rounded"
+      >
         Previous
       </button>
-      <span className="self-center">Page {currentPage} of {totalPages}</span>
-      <button onClick={handleNextPage} disabled={currentPage === totalPages} className="bg-blue-500 text-white px-4 py-2 rounded">
+      <span className="self-center">
+        Page {currentPage} of {totalPages}
+      </span>
+      <button
+        onClick={handleNextPage}
+        disabled={currentPage === totalPages}
+        className="bg-blue-500 text-white px-4 py-2 rounded"
+      >
         Next
       </button>
     </div>

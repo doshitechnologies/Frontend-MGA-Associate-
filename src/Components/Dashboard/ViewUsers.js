@@ -18,13 +18,16 @@ const ViewUsers = () => {
         throw new Error("No authorization token found");
       }
 
-      const response = await fetch("https://projectassociate-fld7.onrender.com/api/auth/users", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        "${process.env.REACT_APP_BACKEND_URL}/api/auth/users",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch users");
@@ -56,7 +59,7 @@ const ViewUsers = () => {
   const filteredUsers = users.filter(
     (user) =>
       user.name.toLowerCase().includes(searchTerm) ||
-      user.email.toLowerCase().includes(searchTerm)
+      user.email.toLowerCase().includes(searchTerm),
   );
 
   const indexOfLastUser = currentPage * usersPerPage;
@@ -77,14 +80,14 @@ const ViewUsers = () => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
         const response = await fetch(
-          `https://projectassociate-fld7.onrender.com/api/auth/users/${userId}`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/auth/users/${userId}`,
           {
             method: "DELETE",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         if (!response.ok) {
@@ -94,7 +97,7 @@ const ViewUsers = () => {
 
         // Update state to remove deleted user immediately
         setUsers((prevUsers) =>
-          prevUsers.filter((user) => user._id !== userId)
+          prevUsers.filter((user) => user._id !== userId),
         );
 
         // Adjust current page if necessary

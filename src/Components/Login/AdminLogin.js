@@ -48,12 +48,12 @@ const AdminLogin = ({ setIsLoggedIn }) => {
       setIsSubmitting(true);
       try {
         const response = await fetch(
-          `https://projectassociate-fld7.onrender.com/api/admin/signinadmin`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/admin/signinadmin`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
-          }
+          },
         );
 
         if (!response.ok) throw new Error("Login failed");

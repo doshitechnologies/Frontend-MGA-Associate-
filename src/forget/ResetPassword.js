@@ -36,12 +36,12 @@ function ResetPassword() {
       setIsSubmitting(true);
       try {
         const response = await fetch(
-          "https://projectassociate-fld7.onrender.com/api/auth/login/reset-password",
+          "${process.env.REACT_APP_BACKEND_URL}/api/auth/reset-password",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token, newPassword }),
-          }
+          },
         );
 
         if (!response.ok) throw new Error("Failed to reset password");
