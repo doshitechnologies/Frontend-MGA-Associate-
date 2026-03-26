@@ -167,7 +167,7 @@ const ShowArchitecture = () => {
       formData.append("file", file);
 
       const { data } = await axios.post(
-        "${process.env.REACT_APP_BACKEND_URL}/api/auth/upload",
+        `${process.env.REACT_APP_BACKEND_URL}/api/auth/upload`,
         formData,
       );
 

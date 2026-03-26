@@ -32,7 +32,7 @@ const OtpVerification = () => {
 
     try {
       const response = await fetch(
-        "${process.env.REACT_APP_BACKEND_URL}/api/auth/verify",
+        `${process.env.REACT_APP_BACKEND_URL}/api/auth/verify`,
         {
           method: "POST",
           headers: {

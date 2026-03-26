@@ -28,7 +28,7 @@ function ForgetPassword() {
       setIsSubmitting(true);
       try {
         const response = await fetch(
-          "${process.env.REACT_APP_BACKEND_URL}/api/auth/forgot-password",
+          `${process.env.REACT_APP_BACKEND_URL}/api/auth/forgot-password`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

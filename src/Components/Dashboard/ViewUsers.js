@@ -19,7 +19,7 @@ const ViewUsers = () => {
       }
 
       const response = await fetch(
-        "${process.env.REACT_APP_BACKEND_URL}/api/auth/users",
+        `${process.env.REACT_APP_BACKEND_URL}/api/auth/users`,
         {
           method: "GET",
           headers: {
